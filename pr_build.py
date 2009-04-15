@@ -13,16 +13,16 @@ from xml.dom import minidom
 
 help_message = '''
 Required arguments:
-	
-	-c --core			revisions separated by commas (no spaces)
-	-l --levels		revisions separated by commas (no spaces)
-	-n --number		version number (e.g. 0856)
+
+	-c --core       revisions separated by commas (no spaces)
+	-l --levels     revisions separated by commas (no spaces)
+	-n --number     version number (e.g. 0856)
 
 Build arguments:
 
-	-b --build			make a client build
-	-s --server			make a server build
-	-t --test				make a test build
+	-b --build      make a client build
+	-s --server     make a server build
+	-t --test       make a test build
 
 Example:
 
@@ -30,15 +30,15 @@ Example:
 
 Optional arguments:
 
-	-k --skip				skip to the last patch (must have all other builds)
-	
-	-y --python			do not compile python
-	-i --installer	do not create installers
-	-u --update			do not update from the repo
-	-e --export			do not export from the repo
-	
-	-v --verbose		run it verbosely
-	-q --quiet			run it quietly
+	-k --skip       skip to the last patch (must have all other builds ready)
+
+	-y --python     do not compile python
+	-i --installer  do not create installers
+	-u --update     do not update the repo
+	-e --export     do not export the repo
+
+	-v --verbose    run it verbosely
+	-q --quiet      run it quietly
 '''
 
 core_url   = 'http://svn.realitymod.com/repos/pr/core/trunk'

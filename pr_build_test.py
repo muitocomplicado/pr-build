@@ -6,24 +6,15 @@ import os
 import os.path
 import pr_build
 
-# USAGE
-# python pr_build_test.py -c 0,1,2 -l 0,1,2 -n 0123 -b -s -t -v -q
-
-# remove all folders
-# for p in [ 'builds', 'core', 'core_patch1', 'core_patch2', 'installer', 'levels', 'levels_patch1', 'levels_patch2' ]:
-# 	os.system( 'rm -rf "%s"' % os.path.join( os.curdir, p ) )
-
-# copy test folders
-for p in os.listdir( os.path.join( os.curdir, 'test' ) ):
-	os.system( 'cp -r "%s" "%s"' % ( os.path.join( os.curdir, 'test', p ), os.curdir ) )
+# Replacing some repo commands to load dummy test data
 
 def update_repo( path, revision ):
 	
 	if revision > 0:
 		if path == pr_build.core_path:
-			pr_build.copy( os.path.join( os.curdir, 'core_patch%s' % revision ), path )
+			pr_build.copy( os.path.join( os.curdir, 'test/core_patch%s' % revision ), path )
 		if path == pr_build.levels_path:
-			pr_build.copy( os.path.join( os.curdir, 'levels_patch%s' % revision ), path )
+			pr_build.copy( os.path.join( os.curdir, 'test/levels_patch%s' % revision ), path )
 
 def export_repo( path, destination ):
 	pr_build.copy( path, destination )
@@ -46,11 +37,29 @@ def paths_repo( source, patch ):
 	
 	return []
 
+# Updating paths to use test data
 
 pr_build.update_repo = update_repo
 pr_build.export_repo = export_repo
 pr_build.log_repo    = log_repo
 pr_build.paths_repo  = paths_repo
+
+pr_build.core_path      = os.path.join( os.curdir, 'test/core' )
+pr_build.levels_path    = os.path.join( os.curdir, 'test/levels' )
+pr_build.installer_path = os.path.join( os.curdir, 'test/installer' )
+pr_build.builds_path    = os.path.join( os.curdir, 'builds_test' )
+
+pr_build.core_build     = os.path.join( pr_build.builds_path, 'core' )
+pr_build.levels_build   = os.path.join( pr_build.builds_path, 'levels' )
+pr_build.server_build   = os.path.join( pr_build.builds_path, 'server' )
+pr_build.patch_build    = os.path.join( pr_build.builds_path, 'patch' )
+
+pr_build.core_build_patch   = os.path.join( pr_build.builds_path, 'core_patch' )
+pr_build.levels_build_patch = os.path.join( pr_build.builds_path, 'levels_patch' )
+
+pr_build.core_installer_path   = os.path.join( pr_build.installer_path, 'pr_core_base.iss' )
+pr_build.levels_installer_path = os.path.join( pr_build.installer_path, 'pr_levels_base.iss' )
+pr_build.patch_installer_path  = os.path.join( pr_build.installer_path, 'pr_patch_base.iss' )
 
 if __name__ == "__main__":
 	sys.exit(pr_build.main())
