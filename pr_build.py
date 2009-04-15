@@ -71,33 +71,24 @@ filter_archives = {
 	'objects/objects_client': '-xr!*.con -xr!*.tweak -xr!*.collisionmesh'
 }
 
-client_archives = {
-	'common_client': 'Common', 
-	'menu/fonts_client': 'Menu', 
-	'menu/menu_client': 'Menu',
-	'objects/objects_client': 'Objects',
-	'shaders_client': 'Shaders'
-}
-
-server_archives = { 
-	'common_server': 'Common',
-	'menu/menu_server': 'Menu', 
-	'objects/objects_server': 'Objects',
-}
-
 archives_con = {
 	'client': 'clientarchives.con',
 	'server': 'serverarchives.con'
 }
 
 core_archives = {
-	'client': client_archives,
-	'server': server_archives
-}
-
-patch_archives = {
-	'client': [],
-	'server': []
+	'client': {
+		'common_client': 'Common', 
+		'menu/fonts_client': 'Menu', 
+		'menu/menu_client': 'Menu',
+		'objects/objects_client': 'Objects',
+		'shaders_client': 'Shaders'
+	},
+	'server': { 
+		'common_server': 'Common',
+		'menu/menu_server': 'Menu', 
+		'objects/objects_server': 'Objects',
+	}
 }
 
 options = {
@@ -274,27 +265,33 @@ def build_client( patch ):
 			log_repo( core_path,   int( options['core'][patch-1] )+1,   core_revision,   core_log )
 			log_repo( levels_path, int( options['levels'][patch-1] )+1, levels_revision, levels_log )
 			
-			clear_archivescon()
+			patch_archives = { 'client': [], 'server': [] }
 			
 			for path in paths_repo( core_log, patch ):
 				copy( os.path.join( core_path, path ), os.path.join( cb, path ) )
-				archivescon( path )
+				
+				for type in patch_archives.keys():
+					for p,o in core_archives[type].iteritems():
+						if path.find( '%s-zip' % p ) != -1:
+							if p not in patch_archives[type]:
+								patch_archives[type].append( p )
+			
 			for path in paths_repo( levels_log, patch ):
 				copy( os.path.join( levels_path, path), os.path.join( lb, path ) )
 			
-			update_archivescon( patch )
-			
+			update_archives( patch_archives, patch )
+	
 	verbose( 'ARCHIVE %s' % patch )
 	
-	build_archives( cb, server_archives, sufix )
-	build_archives( cb, client_archives, sufix )
+	build_archives( cb, core_archives['server'], sufix )
+	build_archives( cb, core_archives['client'], sufix )
 	copy( os.path.join( cb, 'shaders_client%s.zip' % sufix ), 
 				os.path.join( cb, 'shaders_client_night%s.zip' % sufix ) )
 	
 	verbose( 'CLEANUP %s' % patch )
 	
-	clean_archives( cb, server_archives )
-	clean_archives( cb, client_archives )
+	clean_archives( cb, core_archives['server'] )
+	clean_archives( cb, core_archives['client'] )
 	rename( os.path.join( cb, 'settings/usersettings.con' ), os.path.join( cb, 'settings/prserverusersettings.con' ) )
 	delete( os.path.join( cb, 'build_pr_new.bat' ) )
 	delete( os.path.join( cb, 'readme/assets' ) )
@@ -342,7 +339,7 @@ def build_server( patch ):
 	delete( os.path.join( server_build, 'levels' ), '*client.zip', True )
 	delete( os.path.join( server_build, 'levels' ), '*.png', True )
 
-	for p,o in client_archives.iteritems():
+	for p,o in core_archives['client'].iteritems():
 		delete( os.path.join( server_build, p + '.zip' ) )
 		for i in range( 1, patch+1 ):
 			delete( os.path.join( server_build, p + '_patch%s.zip' % i ) )
@@ -520,24 +517,7 @@ def clean_archives( path, archives ):
 		verbose( 'Cleaning archive folder %s' % dir, False )
 		delete( dir )
 
-def archivescon( path ):
-	global patch_archives
-	
-	for type in patch_archives.keys():
-		for p,o in core_archives[type].iteritems():
-			if path.find( p + '-zip' ) != -1:
-				if p not in patch_archives[type]:
-					patch_archives[type].append( p )
-
-def clear_archivescon():
-	global patch_archives
-	
-	patch_archives = {
-		'client': [],
-		'server': []
-	}
-
-def update_archivescon( patch ):
+def update_archives( patch_archives, patch ):
 	
 	for type in patch_archives.keys():
 		
@@ -545,18 +525,27 @@ def update_archivescon( patch ):
 			continue
 	
 		copy( os.path.join( core_build, archives_con[type] ), os.path.join( path_core_build( patch ), archives_con[type] ) )
-	
-		f = open( os.path.join( core_build,               archives_con[type] ), 'r' )
-		g = open( os.path.join( path_core_build( patch ), archives_con[type] ), 'w' )
-	
+		
+		archive_content = ''
+		patch_content   = ''
+		patch_replacer  = 'rem patch'
+		
+		for archive in patch_archives[type]:
+			verbose( 'Updating %s to mount %s_patch%s.zip' % ( archives_con[type], archive, patch ), False )
+			patch_content += 'fileManager.mountArchive %s_patch%s.zip %s\n' % ( archive, patch, core_archives[type][archive] )
+		
+		f = open( os.path.join( core_build, archives_con[type] ), 'r' )
 		for line in f:
-			g.write( line )
-			if line.strip() == 'rem patch':
-				for archive in patch_archives[type]:
-					verbose( 'Updating %s to mount %s_patch%s.zip' % ( archives_con[type], archive, patch ), False )
-					g.write( 'fileManager.mountArchive %s_patch%s.zip %s\n' % ( archive, patch, core_archives[type][archive] ) )
-	
+			archive_content += line
 		f.close()
+		
+		if archive_content.find( patch_replacer ) != -1:
+			archive_content = archive_content.replace( patch_replacer, patch_content + patch_replacer )
+		else:
+			archive_content = patch_content + archive_content
+		
+		g = open( os.path.join( path_core_build( patch ), archives_con[type] ), 'w' )
+		g.write( archive_content )
 		g.close()
 
 def verbose( text, prefix=True ):
