@@ -1,16 +1,16 @@
 Project Reality Mod Build Script
 ================================
 
-[Project Reality](http://realitymod.com) script for making full or patch builds.
+[Project Reality Mod](http://realitymod.com) script for making full or patch builds.
 
 Requirements
 ------------
 
 * Python 2.3+
 * Directory structure:
-	- core (working copy for core repo trunk folder)
-	- levels (working copy for maps repo levels folder)
-	- installer
+	- /core (working copy for core repo trunk folder)
+	- /levels (working copy for maps repo levels folder)
+	- /installer
 		- `pr_core_base.iss`
 		- `pr_levels_base.iss`
 		- `pr_patch_base.iss`
