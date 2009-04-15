@@ -539,7 +539,7 @@ def update_archives( patch_archives, patch ):
 		f.close()
 		
 		if archive_content.find( patch_replacer ) != -1:
-			archive_content = archive_content.replace( patch_replacer, patch_content + patch_replacer )
+			archive_content = archive_content.replace( patch_replacer, patch_replacer + patch_content )
 		else:
 			archive_content = patch_content + archive_content
 		
