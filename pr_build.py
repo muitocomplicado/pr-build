@@ -41,9 +41,6 @@ Optional arguments:
 	-q --quiet      run it quietly
 '''
 
-core_url   = 'http://svn.realitymod.com/repos/pr/core/trunk'
-levels_url = 'http://svn.realitymod.com/repos/pr/maps/levels'
-
 core_path      = os.path.join( os.curdir, 'core' )
 levels_path    = os.path.join( os.curdir, 'levels' )
 installer_path = os.path.join( os.curdir, 'installer' )
@@ -274,8 +271,8 @@ def build_client( patch ):
 		
 		else:
 			
-			log_repo( core_url,   int( options['core'][patch-1] )+1,   core_revision,   core_log )
-			log_repo( levels_url, int( options['levels'][patch-1] )+1, levels_revision, levels_log )
+			log_repo( core_path,   int( options['core'][patch-1] )+1,   core_revision,   core_log )
+			log_repo( levels_path, int( options['levels'][patch-1] )+1, levels_revision, levels_log )
 			
 			clear_archivescon()
 			
