@@ -12,9 +12,9 @@ def update_repo( path, revision ):
 	
 	if revision > 0:
 		if path == pr_build.core_path:
-			pr_build.copy( os.path.join( os.curdir, 'test/core_patch%s' % revision ), path )
+			pr_build.copy( os.path.join( os.curdir, 'test', 'core_patch%s' % revision ), path )
 		if path == pr_build.levels_path:
-			pr_build.copy( os.path.join( os.curdir, 'test/levels_patch%s' % revision ), path )
+			pr_build.copy( os.path.join( os.curdir, 'test', 'levels_patch%s' % revision ), path )
 
 def export_repo( path, destination ):
 	pr_build.copy( path, destination )
@@ -44,9 +44,9 @@ pr_build.export_repo = export_repo
 pr_build.log_repo    = log_repo
 pr_build.paths_repo  = paths_repo
 
-pr_build.core_path      = os.path.join( os.curdir, 'test/core' )
-pr_build.levels_path    = os.path.join( os.curdir, 'test/levels' )
-pr_build.installer_path = os.path.join( os.curdir, 'test/installer' )
+pr_build.core_path      = os.path.join( os.curdir, 'test', 'core' )
+pr_build.levels_path    = os.path.join( os.curdir, 'test', 'levels' )
+pr_build.installer_path = os.path.join( os.curdir, 'test', 'installer' )
 pr_build.builds_path    = os.path.join( os.curdir, 'builds_test' )
 
 pr_build.core_build     = os.path.join( pr_build.builds_path, 'core' )
