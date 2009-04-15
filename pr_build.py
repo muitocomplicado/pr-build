@@ -59,8 +59,8 @@ core_log   = os.path.join( logs_path, 'pr_core.xml' )
 levels_log = os.path.join( logs_path, 'pr_levels.xml' )
 patch_log  = os.path.join( logs_path, 'pr_patch.xml' )
 
-exec_7zip  = os.path.abspath( os.path.join( core_path, 'readme/assets/7za.exe' ) )
-exec_dele  = os.path.abspath( os.path.join( core_path, 'readme/assets/dele.exe' ) )
+exec_7zip  = os.path.abspath( os.path.join( core_path, 'readme', 'assets', '7za.exe' ) )
+exec_dele  = os.path.abspath( os.path.join( core_path, 'readme', 'assets', 'dele.exe' ) )
 exec_inno  = os.path.abspath( 'C:\\Program Files (x86)\\Inno Setup 5\\Compil32.exe' )
 
 core_installer_path   = os.path.join( installer_path, 'pr_core_base.iss' )
@@ -272,7 +272,7 @@ def build_client( patch ):
 				
 				for type in patch_archives.keys():
 					for p,o in core_archives[type].iteritems():
-						if path.find( '%s-zip' % p ) != -1:
+						if path.find( '%s-zip' % p.replace('/',os.sep) ) != -1:
 							if p not in patch_archives[type]:
 								patch_archives[type].append( p )
 			
@@ -292,9 +292,9 @@ def build_client( patch ):
 	
 	clean_archives( cb, core_archives['server'] )
 	clean_archives( cb, core_archives['client'] )
-	rename( os.path.join( cb, 'settings/usersettings.con' ), os.path.join( cb, 'settings/prserverusersettings.con' ) )
+	rename( os.path.join( cb, 'settings', 'usersettings.con' ), os.path.join( cb, 'settings', 'prserverusersettings.con' ) )
 	delete( os.path.join( cb, 'build_pr_new.bat' ) )
-	delete( os.path.join( cb, 'readme/assets' ) )
+	delete( os.path.join( cb, 'readme', 'assets' ) )
 	delete( cb, 'bst*.md5' )
 	delete( lb, 'assets', True )
 	delete( lb, 'server', True )
@@ -309,14 +309,14 @@ def build_python( patch ):
 	
 	verbose( 'PYTHON BUILD %s' % patch )
 	
-	delete( os.path.join( core_build, 'python/game' ) )
-	export_repo( os.path.join( core_path, 'python/game' ), os.path.join( core_build, 'python/game' ) )
-	compile_python( os.path.join( core_build, 'python/game' ) )
+	delete( os.path.join( core_build, 'python', 'game' ) )
+	export_repo( os.path.join( core_path, 'python', 'game' ), os.path.join( core_build, 'python', 'game' ) )
+	compile_python( os.path.join( core_build, 'python', 'game' ) )
 	clean_python( os.path.join( core_build, 'python' ) )
 	
 	if patch:
-		delete( os.path.join( path_core_build( patch ), 'python/game' ) )
-		copy( os.path.join( core_build, 'python/game' ), os.path.join( path_core_build( patch ), 'python/game' ) )
+		delete( os.path.join( path_core_build( patch ), 'python', 'game' ) )
+		copy( os.path.join( core_build, 'python', 'game' ), os.path.join( path_core_build( patch ), 'python', 'game' ) )
 
 def build_patch( patch ):
 	
@@ -340,22 +340,22 @@ def build_server( patch ):
 	delete( os.path.join( server_build, 'levels' ), '*.png', True )
 
 	for p,o in core_archives['client'].iteritems():
-		delete( os.path.join( server_build, p + '.zip' ) )
+		delete( os.path.join( server_build, p.replace('/',os.sep) + '.zip' ) )
 		for i in range( 1, patch+1 ):
-			delete( os.path.join( server_build, p + '_patch%s.zip' % i ) )
+			delete( os.path.join( server_build, p.replace('/',os.sep) + '_patch%s.zip' % i ) )
 
 	for i in range( 1, patch+1 ):
 		delete( os.path.join( server_build, 'shaders_night_client_patch%s.zip' % i ) )
 	
 	delete( os.path.join( server_build, archives_con['client'] ) )
-	delete( os.path.join( server_build, 'menu/external' ) )
-	delete( os.path.join( server_build, 'readme/bf2editor' ) )
+	delete( os.path.join( server_build, 'menu', 'external' ) )
+	delete( os.path.join( server_build, 'readme', 'bf2editor' ) )
 	delete( os.path.join( server_build, 'readme' ), '*.txt', False, ['license.txt'] )
 	delete( os.path.join( server_build, 'readme' ), '*.pdf' )
 	delete( os.path.join( server_build, 'movies' ) )
-	rename( os.path.join( server_build, 'settings/prserverusersettings.con' ), os.path.join( server_build, 'settings/usersettings.con' ) )
+	rename( os.path.join( server_build, 'settings', 'prserverusersettings.con' ), os.path.join( server_build, 'settings', 'usersettings.con' ) )
 	
-	os.chmod( os.path.join( server_build, 'settings/usersettings.con' ), stat.S_IREAD )
+	os.chmod( os.path.join( server_build, 'settings', 'usersettings.con' ), stat.S_IREAD )
 	
 def server_installer( number, test ):
 	
@@ -634,7 +634,7 @@ def zip( source, destination, filters='', folder=False ):
 	root = os.getcwd()
 	
 	if folder:
-		os.chdir( os.path.join( source, '../' ) )
+		os.chdir( os.path.join( source, '..' + os.sep ) )
 		d = os.path.basename( destination )
 		s = os.path.basename( source )
 	else:
@@ -668,7 +668,7 @@ def copy( source, destination ):
 	for root, dirs, files in os.walk( source ):
 		pref = os.path.commonprefix( ( source, root ) )
 		s = os.path.join( root )
-		d = os.path.join( destination, root.replace( pref, '' ).strip('/') )
+		d = os.path.join( destination, root.replace( pref, '' ).strip(os.sep) )
 		
 		for name in files:
 			copy( os.path.join( s, name ), os.path.join( d, name ) )
