@@ -60,8 +60,7 @@ levels_log = os.path.join( logs_path, 'pr_levels.xml' )
 patch_log  = os.path.join( logs_path, 'pr_patch.xml' )
 
 exec_7zip  = os.path.abspath( os.path.join( core_path, 'readme', 'assets', '7za.exe' ) )
-exec_dele  = os.path.abspath( os.path.join( core_path, 'readme', 'assets', 'dele.exe' ) )
-exec_inno  = os.path.abspath( 'C:\\Program Files (x86)\\Inno Setup 5\\Compil32.exe' )
+exec_inno  = 'C:\\Program Files (x86)\\Inno Setup 5\\Compil32.exe'
 
 core_installer_path   = os.path.join( installer_path, 'pr_core_base.iss' )
 levels_installer_path = os.path.join( installer_path, 'pr_levels_base.iss' )
