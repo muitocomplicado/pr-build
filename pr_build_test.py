@@ -18,7 +18,6 @@ for p in os.listdir( os.path.join( os.curdir, 'test' ) ):
 	os.system( 'cp -r "%s" "%s"' % ( os.path.join( os.curdir, 'test', p ), os.curdir ) )
 
 def update_repo( path, revision ):
-	print '--------------- update_repo'
 	
 	if revision > 0:
 		if path == pr_build.core_path:
@@ -27,15 +26,12 @@ def update_repo( path, revision ):
 			pr_build.copy( os.path.join( os.curdir, 'levels_patch%s' % revision ), path )
 
 def export_repo( path, destination ):
-	print '--------------- export_repo'
 	pr_build.copy( path, destination )
 
 def log_repo( path, start, end, destination ):
-	print '--------------- log_repo'
 	pass
 
 def paths_repo( source, patch ):
-	print '--------------- paths_repo'
 	
 	if source == pr_build.core_log:
 		if patch == 1:
