@@ -476,8 +476,8 @@ def build_archives( path, archives, sufix='' ):
 	
 	for p,o in archives.iteritems():
 		
-		dir  = os.path.join( path, p + '-zip' )
-		file = os.path.join( path, p + sufix + '.zip' )
+		dir  = os.path.join( path, p.replace('/',os.sep) + '-zip' )
+		file = os.path.join( path, p.replace('/',os.sep) + sufix + '.zip' )
 		
 		verbose( 'Building archive %s from %s' % ( file, dir ), False )
 		
@@ -511,7 +511,7 @@ def clean_python( path ):
 def clean_archives( path, archives ):
 	
 	for p,o in archives.iteritems():
-		dir = os.path.join( path, p + '-zip' )
+		dir = os.path.join( path, p.replace('/',os.sep) + '-zip' )
 		
 		verbose( 'Cleaning archive folder %s' % dir, False )
 		delete( dir )
