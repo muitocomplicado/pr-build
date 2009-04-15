@@ -192,7 +192,7 @@ def main(argv=None):
 					if not os.path.exists( path_core_build( p ) ):
 						raise Usage('Missing core build %s' % path_core_build( p ) )
 					if not os.path.exists( path_levels_build( p ) ):
-						raise Usage('Missing core build %s' % path_levels_build( p ) )
+						raise Usage('Missing levels build %s' % path_levels_build( p ) )
 				
 				options['patch'] = patch
 				build_client( patch )
