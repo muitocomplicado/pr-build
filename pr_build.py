@@ -10,7 +10,6 @@ import fnmatch
 import compileall
 from xml.dom import minidom
 
-
 help_message = '''
 Required arguments:
 
@@ -376,21 +375,21 @@ def server_installer( number, test ):
 def core_installer( number, test ):
 	
 	verbose( 'CORE INSTALLER %s TEST %s' % ( number, test ) )
-	client_installer( core_installer_path, number, test )
+	client_installer( 'core', core_installer_path, number, test )
 	
 def levels_installer( number, test ):
 	
 	verbose( 'LEVELS INSTALLER %s TEST %s' % ( number, test ) )
-	client_installer( levels_installer_path, number, test )
+	client_installer( 'levels', levels_installer_path, number, test )
 
 def patch_installer( number, test ):
 	
 	verbose( 'PATCH INSTALLER %s TEST %s' % ( number, test ) )
-	client_installer( patch_installer_path, number, test )
+	client_installer( 'patch', patch_installer_path, number, test )
 
-def client_installer( script, number, test ):
+def client_installer( type, script, number, test ):
 	
-	verbose( 'Running installer %s' % ( script ), False )
+	verbose( 'Running %s installer %s' % ( type, script ), False )
 	
 	final = script.replace( '_base', '' )
 	
@@ -409,7 +408,14 @@ def client_installer( script, number, test ):
 	f.close()
 	
 	if os.path.exists( exec_inno ):
-		os.system( '"%s" /cc "%s"' % ( exec_inno, final ) )
+		os.spawnl(os.P_WAIT, exec_inno, os.path.basename( exec_inno ), '/cc', final)
+		
+		output   = os.path.join( installer_path, 'Output', 'setup.exe' )
+		filename = os.path.join( builds_path, 'pr_%s_%s_setup.exe' % ( number, type ) )
+		
+		delete( filename )
+		copy( output, filename )
+		delete( output )
 
 def path_core_build( patch ):
 	if patch:
