@@ -14,6 +14,8 @@ Requirements
 		- `pr_core_base.iss`
 		- `pr_levels_base.iss`
 		- `pr_patch_base.iss`
+		`/logs`
+		`/builds`
 	- `pr_build.py`
 
 Usage
