@@ -1,8 +1,6 @@
 
 rem patch
 
-fileManager.mountArchive font_client.zip Common
-fileManager.mountArchive super_client.zip Common
 fileManager.mountArchive common_client.zip Common
 fileManager.mountArchive menu/menu_client.zip Menu
 fileManager.mountArchive objects/objects_client.zip Menu
