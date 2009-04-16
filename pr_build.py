@@ -461,7 +461,9 @@ def paths_repo( source, patch ):
 			p = p.replace( '/trunk/', '' )
 		if source == levels_log:
 			p = p.replace( '/levels/', '' )
-
+		
+		p = p.replace('/',os.sep)
+		
 		if a == 'D':
 			if p in list:
 				list.remove( p )
@@ -568,15 +570,21 @@ def paths( path, pattern='*', recursive=False, exclude=[] ):
 	if not os.path.isdir( path ):
 		return []
 	
-	if '.*' not in exclude:
-		exclude.append( '.*' )
+	# if '.*' not in exclude:
+	# 	exclude.append( '.*' )
 
 	list = []
 	for root, dirs, files in os.walk( path ):
+		
+		if '.svn' in dirs:
+			dirs.remove( '.svn' )
+			
 		for f in filter( files, pattern, exclude ):
 			list.append( os.path.join( root, f ) )
+			
 		for f in filter( dirs, pattern, exclude ):
 			list.append( os.path.join( root, f ) )
+			
 		if not recursive:
 			break
 
@@ -665,12 +673,17 @@ def copy( source, destination ):
 		return
 	
 	for root, dirs, files in os.walk( source ):
+		
+		if '.svn' in dirs:
+			dirs.remove( '.svn' )
+		
 		pref = os.path.commonprefix( ( source, root ) )
 		s = os.path.join( root )
 		d = os.path.join( destination, root.replace( pref, '' ).strip(os.sep) )
 		
 		for name in files:
 			copy( os.path.join( s, name ), os.path.join( d, name ) )
+		
 		for name in dirs:
 			if not os.path.exists( os.path.join( d, name ) ):
 				verbose( 'Creating dir %s' % os.path.join( d, name ), False )
