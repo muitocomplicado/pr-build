@@ -284,7 +284,9 @@ def build_client( patch ):
 	build_archives( cb, core_archives['server'], sufix )
 	build_archives( cb, core_archives['client'], sufix )
 	copy( os.path.join( cb, 'shaders_client%s.zip' % sufix ), 
-				os.path.join( cb, 'shaders_client_night%s.zip' % sufix ) )
+				os.path.join( cb, 'shaders_client_pr%s.zip' % sufix ) )
+	copy( os.path.join( cb, 'shaders_client%s.zip' % sufix ), 
+				os.path.join( cb, 'shaders_night_client_%s.zip' % sufix ) )
 	
 	verbose( 'CLEANUP %s' % patch )
 	
@@ -342,8 +344,12 @@ def build_server( patch ):
 		delete( os.path.join( server_build, p.replace('/',os.sep) + '.zip' ) )
 		for i in range( 1, patch+1 ):
 			delete( os.path.join( server_build, p.replace('/',os.sep) + '_patch%s.zip' % i ) )
-
+	
+	delete( os.path.join( server_build, 'shaders_client_pr.zip' ) )
+	delete( os.path.join( server_build, 'shaders_night_client.zip' ) )
+	
 	for i in range( 1, patch+1 ):
+		delete( os.path.join( server_build, 'shaders_client_pr_patch%s.zip' % i ) )
 		delete( os.path.join( server_build, 'shaders_night_client_patch%s.zip' % i ) )
 	
 	delete( os.path.join( server_build, archives_con['client'] ) )
