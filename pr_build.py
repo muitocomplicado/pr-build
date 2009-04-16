@@ -263,21 +263,13 @@ def build_client( patch ):
 			log_repo( core_path,   int( options['core'][patch-1] )+1,   core_revision,   core_log )
 			log_repo( levels_path, int( options['levels'][patch-1] )+1, levels_revision, levels_log )
 			
-			patch_archives = { 'client': [], 'server': [] }
-			
 			for path in paths_repo( core_log, patch ):
 				copy( os.path.join( core_path, path ), os.path.join( cb, path ) )
-				
-				for type in patch_archives.keys():
-					for p,o in core_archives[type].iteritems():
-						if path.find( '%s-zip' % p.replace('/',os.sep) ) != -1:
-							if p not in patch_archives[type]:
-								patch_archives[type].append( p )
 			
 			for path in paths_repo( levels_log, patch ):
 				copy( os.path.join( levels_path, path), os.path.join( lb, path ) )
 			
-			update_archives( patch_archives, patch )
+			update_archives( patch )
 	
 	verbose( 'ARCHIVE %s' % patch )
 	
@@ -341,9 +333,9 @@ def build_server( patch ):
 	delete( os.path.join( server_build, 'levels' ), '*.png', True )
 
 	for p,o in core_archives['client'].iteritems():
-		delete( os.path.join( server_build, p.replace('/',os.sep) + '.zip' ) )
+		delete( os.path.join( server_build, '%s.zip' % p.replace('/',os.sep) ) )
 		for i in range( 1, patch+1 ):
-			delete( os.path.join( server_build, p.replace('/',os.sep) + '_patch%s.zip' % i ) )
+			delete( os.path.join( server_build, '%s_patch%s.zip' % ( p.replace('/',os.sep), i ) ) )
 	
 	delete( os.path.join( server_build, 'shaders_client_pr.zip' ) )
 	delete( os.path.join( server_build, 'shaders_night_client.zip' ) )
@@ -491,8 +483,8 @@ def build_archives( path, archives, sufix='' ):
 	
 	for p,o in archives.iteritems():
 		
-		dir  = os.path.join( path, p.replace('/',os.sep) + '-zip' )
-		file = os.path.join( path, p.replace('/',os.sep) + sufix + '.zip' )
+		dir  = os.path.join( path, '%s-zip'   % ( p.replace('/',os.sep) ) )
+		file = os.path.join( path, '%s%s.zip' % ( p.replace('/',os.sep), sufix ) )
 		
 		verbose( 'Building archive %s from %s' % ( file, dir ), False )
 		
@@ -526,39 +518,46 @@ def clean_python( path ):
 def clean_archives( path, archives ):
 	
 	for p,o in archives.iteritems():
-		dir = os.path.join( path, p.replace('/',os.sep) + '-zip' )
+		dir = os.path.join( path, '%s-zip' % p.replace('/',os.sep) )
 		
 		verbose( 'Cleaning archive folder %s' % dir, False )
 		delete( dir )
 
-def update_archives( patch_archives, patch ):
+def update_archives( patch ):
 	
-	for type in patch_archives.keys():
+	for type,filecon in archives_con.iteritems():
 		
-		if not len( patch_archives[type] ):
-			continue
-	
-		copy( os.path.join( core_build, archives_con[type] ), os.path.join( path_core_build( patch ), archives_con[type] ) )
+		filename = os.path.join( path_core_build( patch ), filecon )
+		
+		if not os.path.exists( filename ):
+			copy( os.path.join( core_path, filecon ), filename )
 		
 		archive_content = ''
-		patch_content   = ''
 		patch_replacer  = 'rem patch'
 		
-		for archive in patch_archives[type]:
-			verbose( 'Updating %s to mount %s_patch%s.zip' % ( archives_con[type], archive, patch ), False )
-			patch_content += 'fileManager.mountArchive %s_patch%s.zip %s\n' % ( archive, patch, core_archives[type][archive] )
-		
-		f = open( os.path.join( core_build, archives_con[type] ), 'r' )
+		f = open( os.path.join( core_build, filecon ), 'r' )
 		for line in f:
 			archive_content += line
 		f.close()
 		
-		if archive_content.find( patch_replacer ) != -1:
-			archive_content = archive_content.replace( patch_replacer, patch_replacer + '\n' + patch_content )
-		else:
-			archive_content = patch_content + archive_content
+		for i in range( 1, patch+1 ):
+			if archive_content.find( '_patch%s' % i ) != -1:
+				continue
+			
+			patch_content = ''
+			for p,o in core_archives[type].iteritems():
+				ps = os.path.join( path_core_build( i ), p.replace('/',os.sep) )
+				
+				if os.path.exists( '%s-zip' % ps ) or os.path.exists( '%s_patch%s.zip' % ( ps, i ) ):
+					verbose( 'Updating %s to mount %s_patch%s.zip' % ( filecon, p, i ), False )
+					patch_content += 'fileManager.mountArchive %s_patch%s.zip %s\n' % ( p, i, o )
+			
+			if archive_content.find( patch_replacer ) != -1:
+				archive_content = archive_content.replace( patch_replacer, patch_replacer + '\n' + patch_content )
+			else:
+				archive_content = patch_content + archive_content
 		
-		g = open( os.path.join( path_core_build( patch ), archives_con[type] ), 'w' )
+		g = open( filename, 'w' )
 		g.write( archive_content )
 		g.close()
 
