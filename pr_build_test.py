@@ -27,25 +27,25 @@ def paths_repo( source, patch ):
 	if source == pr_build.core_log:
 		if patch == 1:
 			return [ 
-				os.path.join( 'menu', 'menu_client-zip', 'super.con' ), 
-				os.path.join( 'menu', 'menu_server-zip', 'super.tweak' ) 
+				'menu/menu_client-zip/super.con',
+				'menu/menu_server-zip/super.tweak'
 			] 
 		if patch == 2:
 			return [ 
-				os.path.join( 'common_client-zip', 'something.con' ),
-				os.path.join( 'objects', 'objects_server-zip', 'vehicles', 'vehicles.tweak' ),
-				os.path.join( 'objects', 'objects_server-zip', 'weapons', 'weapons.tweak' ) 
+				'common_client-zip/something.con',
+				'objects/objects_server-zip/vehicles/vehicles.tweak',
+				'objects/objects_server-zip/weapons/weapons.tweak'
 			]
 	if source == pr_build.levels_log:
 		if patch == 1:
 			return [ 
-				os.path.join( 'archer', 'objects_server.zip' )
+				'archer/objects_server.zip'
 			]
 		if patch == 2:
 			return [ 
-				os.path.join( 'archer', 'objects_client.zip' ), 
-				os.path.join( 'archer', 'objects_server.zip' ), 
-				os.path.join( 'fallujah', 'objects_server.zip' )
+				'archer/objects_client.zip',
+				'archer/objects_server.zip',
+				'fallujah/objects_server.zip'
 			]
 	
 	return []
