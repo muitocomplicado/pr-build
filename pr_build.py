@@ -291,12 +291,13 @@ def build_client( patch ):
 	
 	clean_archives( cb, core_archives['server'] )
 	clean_archives( cb, core_archives['client'] )
-	rename( os.path.join( cb, 'settings', 'usersettings.con' ), os.path.join( cb, 'settings', 'prserverusersettings.con' ) )
 	delete( os.path.join( cb, 'build_pr_new.bat' ) )
 	delete( os.path.join( cb, 'readme', 'assets' ) )
 	delete( cb, 'bst*.md5' )
 	delete( lb, 'assets', True )
 	delete( lb, 'server', True )
+	
+	# rename( os.path.join( cb, 'settings', 'usersettings.con' ), os.path.join( cb, 'settings', 'prserverusersettings.con' ) )
 	
 	if patch:
 		verbose( 'MERGE PATCH %s' % patch )
@@ -352,9 +353,9 @@ def build_server( patch ):
 	delete( os.path.join( server_build, 'readme' ), '*.txt', False, ['license.txt'] )
 	delete( os.path.join( server_build, 'readme' ), '*.pdf' )
 	delete( os.path.join( server_build, 'movies' ) )
-	rename( os.path.join( server_build, 'settings', 'prserverusersettings.con' ), os.path.join( server_build, 'settings', 'usersettings.con' ) )
 	
-	os.chmod( os.path.join( server_build, 'settings', 'usersettings.con' ), stat.S_IREAD )
+	# rename( os.path.join( server_build, 'settings', 'prserverusersettings.con' ), os.path.join( server_build, 'settings', 'usersettings.con' ) )
+	# os.chmod( os.path.join( server_build, 'settings', 'usersettings.con' ), stat.S_IREAD )
 	
 def server_installer( number, test ):
 	
