@@ -8,26 +8,36 @@ import os.path
 import stat
 import fnmatch
 import compileall
+
 from xml.dom import minidom
 
+import pr_svn
+
 help_message = '''
-Required arguments:
+Project Reality Mod Build Generator
+
+Usage:
+
+	python pr_build.py [args]
+
+Main options:
 
 	-c --core       revisions separated by commas (no spaces)
 	-l --levels     revisions separated by commas (no spaces)
 	-n --number     version number (e.g. 0856)
 
-Build arguments:
+Build options:
 
 	-b --build      make a client build
 	-s --server     make a server build
 	-t --test       make a test build
 
-Example:
+Examples:
 
 	python pr_build.py --core 2334,2356 --levels 456,488 --number 0856 --build --server
+	python pr_build.py -c 2334 -l 456 -n 0856 --build --test
 
-Optional arguments:
+Other options:
 
 	-k --skip       skip to the last patch (must have all other builds ready)
 
@@ -53,10 +63,6 @@ patch_build    = os.path.join( builds_path, 'patch' )
 
 core_build_patch   = os.path.join( builds_path, 'core_patch' )
 levels_build_patch = os.path.join( builds_path, 'levels_patch' )
-
-core_log   = os.path.join( logs_path, 'pr_core.xml' )
-levels_log = os.path.join( logs_path, 'pr_levels.xml' )
-patch_log  = os.path.join( logs_path, 'pr_patch.xml' )
 
 exec_7zip  = os.path.abspath( os.path.join( core_path, 'readme', 'assets', '7za.exe' ) )
 exec_inno  = 'C:\\Program Files (x86)\\Inno Setup 5\\Compil32.exe'
@@ -260,13 +266,16 @@ def build_client( patch ):
 		
 		else:
 			
-			log_repo( core_path,   int( options['core'][patch-1] )+1,   core_revision,   core_log )
-			log_repo( levels_path, int( options['levels'][patch-1] )+1, levels_revision, levels_log )
+			core_lrevision   = int( options['core'][patch-1] )+1
+			levels_lrevision = int( options['levels'][patch-1] )+1
 			
-			for path in paths_repo( core_log, patch ):
+			core_log   = log_repo( core_path,   core_lrevision,   core_revision )
+			levels_log = log_repo( levels_path, levels_lrevision, levels_revision )
+			
+			for path in paths_repo( core_log, patch, '/trunk/' ):
 				copy( os.path.join( core_path, path ), os.path.join( cb, path ) )
 			
-			for path in paths_repo( levels_log, patch ):
+			for path in paths_repo( levels_log, patch, '/levels/' ):
 				copy( os.path.join( levels_path, path), os.path.join( lb, path ) )
 			
 			update_archives( patch )
@@ -430,14 +439,14 @@ def path_levels_build( patch ):
 def update_repo( path, revision ):
 	
 	verbose( 'Updating %s to revision %s' % ( path, revision ), False )
-	os.system( 'svn update %s %s -r %s' % ( path, options['quiet'], revision ) )
+	pr_svn.update( path, revision, options['quiet'] )
 
 def export_repo( path, destination ):
 	
 	verbose( 'Exporting %s to %s' % ( path, destination ), False )
-	os.system( 'svn export %s %s %s' % ( path, destination, options['quiet'] ) )
+	pr_svn.export( path, destination, options['quiet'] )
 
-def log_repo( path, start, end, destination ):
+def log_repo( path, start, end ):
 	
 	if start:
 		revision = '%s:%s' % ( start, end )
@@ -445,39 +454,11 @@ def log_repo( path, start, end, destination ):
 		revision = end
 	
 	verbose( 'Log %s revision %s to %s' % ( path, revision, destination ), False )
-	os.system( 'svn log %s %s %s --xml -r %s > %s' % ( path, options['quiet'], options['verbose'], revision, destination ) )
-
-def paths_repo( source, patch ):
 	
-	if not os.path.exists( source ):
-		return
-	
-	verbose( 'Parsing paths from %s patch %s' % ( source, patch ), False )
+	return pr_svn.log( path, revision, True )
 
-	list = []
-
-	xmldoc = minidom.parse(source)
-	for path in xmldoc.getElementsByTagName('path'):
-
-		a = str( path.getAttribute('action') )
-		p = str( path.firstChild.nodeValue )
-
-		if source == core_log:
-			p = p.replace( '/trunk/', '' )
-		if source == levels_log:
-			p = p.replace( '/levels/', '' )
-		
-		p = p.replace('/',os.sep)
-		
-		if a == 'D':
-			if p in list:
-				list.remove( p )
-		else:
-			if p not in list:
-				list.append( p )
-
-	list.sort()
-	return list
+def paths_repo( file, patch, remove='/trunk/' ):
+	return pr_svn.get_paths( file, remove )
 
 def build_archives( path, archives, sufix='' ):
 	

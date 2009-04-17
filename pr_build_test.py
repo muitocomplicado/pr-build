@@ -19,12 +19,12 @@ def update_repo( path, revision ):
 def export_repo( path, destination ):
 	pr_build.copy( path, destination )
 
-def log_repo( path, start, end, destination ):
+def log_repo( path, start, end ):
 	pass
 
-def paths_repo( source, patch ):
+def paths_repo( file, patch, remove='/trunk/' ):
 	
-	if source == pr_build.core_log:
+	if remove == '/trunk/':
 		if patch == 1:
 			return [ 
 				'menu/menu_client-zip/super.con',
@@ -36,7 +36,7 @@ def paths_repo( source, patch ):
 				'objects/objects_server-zip/vehicles/vehicles.tweak',
 				'objects/objects_server-zip/weapons/weapons.tweak'
 			]
-	if source == pr_build.levels_log:
+	if remove == '/levels/':
 		if patch == 1:
 			return [ 
 				'archer/objects_server.zip'
