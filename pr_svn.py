@@ -15,11 +15,13 @@ def log( path, revision=None, multi=False, default='GENERAL' ):
 	if revision:
 		cmd += ' -r %s' % revision
 	
-	temp = tempfile.NamedTemporaryFile()
+	temp, abspath = tempfile.mkstemp()
+	file = os.fdopen( temp )
+	file.close()
 	
-	os.system( '%s > %s' % ( cmd, temp.name ) )
+	os.system( '%s > %s' % ( cmd, abspath ) )
 	
-	return get_log( temp, multi, default )
+	return get_log( abspath, multi, default )
 
 def update( path, revision=None, quiet=True ):
 	
