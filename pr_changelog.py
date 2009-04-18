@@ -39,7 +39,7 @@ Other options:
 	-a --author      group by author
 	
 	-o --output      set the output format (default text)
-	                 other: bbcode, rss
+	                 other: bbcode, rss, test
 	
 	-d --default     set the default category (GENERAL)
 	
@@ -133,8 +133,8 @@ def main(argv=None):
 			if option in ("-q", "--quiet"):
 				options['quiet'] = '-q'
 		
-		if options['output'] not in ['text', 'bbcode', 'rss']:
-			raise Usage( 'Incorrect output format (text, bbcode, rss)' )
+		if options['output'] not in ['text', 'bbcode', 'rss', 'test']:
+			raise Usage( 'Incorrect output format (text, bbcode, rss, test)' )
 			
 		logs = pr_svn.log( options['path'], options['revision'], options['multi'], options['default'] )
 		
@@ -168,6 +168,20 @@ def header( path, revision, output='text' ):
 		print '<link>http://realitymod.com</link>'
 		print '<description>Latest changelog information.</description>'
 		print '<language>en-us</language>'
+	
+	if output == 'test':
+		print '[QUOTE][B]How To Use This Test List:[/B]'
+		print '[LIST]'
+		print '[*] Please color code the results of the test according to the legend below'
+		print '[*] Each item should be worked on individually, then once completed, moved to the appropriate section (GOOD TO GO or PROBLEMS).'
+		print '[*] If a test item has any problems at all, it should stay in problems.'
+		print '[*] If a test item still needs further testing it should stay in need to test.'
+		print '[/LIST]\n'
+		print '[B]Test Results Text Legend:[/B]'
+		print '[COLOR=Green]Working Good[/COLOR]'
+		print '[COLOR=Red]Problem[/COLOR]'
+		print '[COLOR="RoyalBlue"]Fixed for next build[/COLOR][/QUOTE]\n'
+		print '[SIZE=9]NEED TO TEST:[/SIZE]\n'
 	
 	if output == 'bbcode':
 		print '[SIZE="6"]%s[/SIZE]\n' % revision
@@ -246,9 +260,16 @@ def by_author( logs, output='text' ):
 		print msg % entries
 
 def message( entry, output='text' ):
-	txt = '%s: %s (%s) %s\n' % ( entry['category'], entry['message'], entry['author'], entry['revision'] )
+	
+	if output == 'test':
+		txt = '[QUOTE]Test: %s[/QUOTE]\n\n' % entry['message']
+	
+	if output in ['text','bbcode','rss']:
+		txt = '%s: %s (%s) %s\n' % ( entry['category'], entry['message'], entry['author'], entry['revision'] )
+	
 	if output == 'rss':
 		txt = txt.replace( '\n', '<br />\n' )
+	
 	return txt
 
 def category( msg, output='text' ):
@@ -260,7 +281,7 @@ def category( msg, output='text' ):
 		txt += '\n-------------------------------------------------------------\n\n'
 		txt += '%s'
 	
-	if output == 'bbcode':
+	if output in ['bbcode','test']:
 		
 		txt  = '\n[SIZE="4"]%s[/SIZE]\n\n' % msg
 		txt += '%s'
