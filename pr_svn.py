@@ -57,7 +57,7 @@ def get_paths( logs, remove='/trunk/' ):
 	
 	paths = []
 	
-	for entry in logs.values():
+	for entry in logs:
 		for p in entry['paths']:
 			
 			action = p[0]
