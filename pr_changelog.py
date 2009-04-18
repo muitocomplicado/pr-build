@@ -150,12 +150,16 @@ def main(argv=None):
 			print '<description>Latest changelog information.</description>'
 			print '<language>en-us</language>'
 		
+		print header( options['path'], options['revision'], options['output'] )
+		
 		if options['category']:
 			by_category( logs, options['output'] )
 		elif options['author']:
 			by_author( logs, options['output'] )
 		else:
 			by_date( logs, options['output'] )
+		
+		print footer( options['path'], options['revision'], options['output'] )
 		
 		if options['output'] == 'rss':
 			print '</channel>'
@@ -166,6 +170,34 @@ def main(argv=None):
 		# print >> sys.stderr, "\t for help use --help"
 		return 2
 
+
+def header( path, revision, output='text' ):
+	
+	if output == 'rss':
+		txt  = '<?xml version="1.0"?>'
+		txt += '<rss version="2.0">'
+		txt += '<channel>'
+		txt += '<title>Project Reality Mod Changelog</title>'
+		txt += '<link>http://realitymod.com</link>'
+		txt += '<description>Latest changelog information.</description>'
+		txt += '<language>en-us</language>'
+	
+	if output == 'bbcode':
+		txt  = '\n[SIZE="6"]%s[/SIZE]\n\n' % revision
+	
+	if output == 'text':
+		txt  = '\n=============================================================\n'
+		txt += revision
+		txt += '\n=============================================================\n\n'
+	
+	return txt
+
+def footer( path, revision, output='text' ):
+	
+	if output in ['text','bbcode']:
+		return '\n%s\n' % datetime.utcnow()
+	
+	return ''
 
 def compare(a,b):
 	return cmp( a, b )
@@ -244,7 +276,7 @@ def category( msg, output='text' ):
 	
 	if output == 'bbcode':
 		
-		txt  = '\n[SIZE="6"]' + msg + '[/SIZE]\n\n'
+		txt  = '\n[SIZE="4"]%s[/SIZE]\n\n' % msg
 		txt += '%s'
 	
 	if output == 'rss':
