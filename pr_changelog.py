@@ -246,7 +246,7 @@ def by_author( logs, output='text' ):
 		print msg % entries
 
 def message( entry, output='text' ):
-	txt = '%s: %s (%s %s)\n' % ( entry['category'], entry['message'], entry['author'], entry['revision'] )
+	txt = '%s: %s (%s) %s\n' % ( entry['category'], entry['message'], entry['author'], entry['revision'] )
 	if output == 'rss':
 		txt = txt.replace( '\n', '<br />\n' )
 	return txt
