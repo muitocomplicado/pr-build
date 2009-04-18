@@ -183,7 +183,7 @@ def footer( path, revision, output='text' ):
 		print '</channel>'
 		print '</rss>'
 	if output in ['text','bbcode']:
-		print '\n%s\n' % datetime.utcnow()
+		print '\n%s UTC\n' % datetime.datetime.utcnow()
 
 def compare(a,b):
 	return cmp( a, b )
