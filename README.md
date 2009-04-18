@@ -9,8 +9,6 @@ Some utility scripts used for creating [Project Reality Mod](http://realitymod.c
 Requires Python 2.3+
 
 
----
-
 ## pr_build.py
 
 ### Usage:
@@ -48,14 +46,14 @@ Requires Python 2.3+
 
 ### Directory structure:
 
-	`/core` (working copy for core repo trunk folder)
-	`/levels` (working copy for maps repo levels folder)
-	`/installer` (installer base scripts)
-		`pr_core_base.iss`
-		`pr_levels_base.iss`
-		`pr_patch_base.iss`
-	`/builds`
-	`pr_build.py`
+	/core (working copy for core repo trunk folder)
+	/levels (working copy for maps repo levels folder)
+	/installer (installer base scripts)
+		pr_core_base.iss
+		pr_levels_base.iss
+		pr_patch_base.iss
+	/builds
+	pr_build.py
 
 ### Testing
 
@@ -65,8 +63,6 @@ You can run a test with the dummy data in the `test` folder by running `pr_build
 
 The results will be in the `builds_test` folder.
 
-
----
 
 ## pr_changelog.py
 
