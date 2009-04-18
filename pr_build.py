@@ -453,7 +453,7 @@ def log_repo( path, start, end ):
 	else:
 		revision = end
 	
-	verbose( 'Log %s revision %s to %s' % ( path, revision, destination ), False )
+	verbose( 'Log %s revision %s' % ( path, revision ), False )
 	
 	return pr_svn.log( path, revision, True )
 
