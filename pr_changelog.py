@@ -141,16 +141,7 @@ def main(argv=None):
 		if options['hide'] in [ True, False ]:
 			logs = hide( logs, options['hide'] )
 		
-		if options['output'] == 'rss':
-			print '<?xml version="1.0"?>'
-			print '<rss version="2.0">'
-			print '<channel>'
-			print '<title>Project Reality Mod Changelog</title>'
-			print '<link>http://realitymod.com</link>'
-			print '<description>Latest changelog information.</description>'
-			print '<language>en-us</language>'
-		
-		print header( options['path'], options['revision'], options['output'] )
+		header( options['path'], options['revision'], options['output'] )
 		
 		if options['category']:
 			by_category( logs, options['output'] )
@@ -159,11 +150,7 @@ def main(argv=None):
 		else:
 			by_date( logs, options['output'] )
 		
-		print footer( options['path'], options['revision'], options['output'] )
-		
-		if options['output'] == 'rss':
-			print '</channel>'
-			print '</rss>'
+		footer( options['path'], options['revision'], options['output'] )
 		
 	except Usage, err:
 		print >> sys.stderr, sys.argv[0].split("/")[-1] + ": " + str(err.msg)
@@ -174,30 +161,29 @@ def main(argv=None):
 def header( path, revision, output='text' ):
 	
 	if output == 'rss':
-		txt  = '<?xml version="1.0"?>'
-		txt += '<rss version="2.0">'
-		txt += '<channel>'
-		txt += '<title>Project Reality Mod Changelog</title>'
-		txt += '<link>http://realitymod.com</link>'
-		txt += '<description>Latest changelog information.</description>'
-		txt += '<language>en-us</language>'
+		print '<?xml version="1.0"?>'
+		print '<rss version="2.0">'
+		print '<channel>'
+		print '<title>Project Reality Mod Changelog</title>'
+		print '<link>http://realitymod.com</link>'
+		print '<description>Latest changelog information.</description>'
+		print '<language>en-us</language>'
 	
 	if output == 'bbcode':
-		txt  = '\n[SIZE="6"]%s[/SIZE]\n\n' % revision
+		print '[SIZE="6"]%s[/SIZE]\n' % revision
 	
 	if output == 'text':
-		txt  = '\n=============================================================\n'
-		txt += revision
-		txt += '\n=============================================================\n\n'
-	
-	return txt
+		print '============================================================='
+		print str( revision )
+		print '=============================================================\n'
 
 def footer( path, revision, output='text' ):
 	
+	if output == 'rss':
+		print '</channel>'
+		print '</rss>'
 	if output in ['text','bbcode']:
-		return '\n%s\n' % datetime.utcnow()
-	
-	return ''
+		print '\n%s\n' % datetime.utcnow()
 
 def compare(a,b):
 	return cmp( a, b )
