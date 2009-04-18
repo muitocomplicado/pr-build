@@ -189,8 +189,12 @@ def by_category( logs, output='text' ):
 	
 	for g,logs in grouped( logs, 'category' ).iteritems():
 		msg = category( g.upper(), output )
+		
+		entries = ''
 		for entry in logs:
-			print msg % message( entry, output )
+			entries += message( entry, output )
+		
+		print msg % entries
 
 def by_date( logs, output='text' ):
 	
@@ -206,18 +210,25 @@ def by_date( logs, output='text' ):
 		date = datetime.date( int( g[0:4] ), int( g[5:7] ), int( g[8:10] ) )
 		msg = category( date.strftime('%a, %d %B %Y'), output )
 		
+		entries = ''
 		for entry in logs_date[g]:
-			print msg % message( entry, output )
+			entries += message( entry, output )
+		
+		print msg % entries
 
 def by_author( logs, output='text' ):
 	
 	for g,logs in grouped( logs, 'author' ).iteritems():
 		msg = category( g.upper(), output )
+		
+		entries = ''
 		for entry in logs:
-			print msg % message( entry, output )
+			entries += message( entry, output )
+		
+		print msg % entries
 
 def message( entry, output='text' ):
-	return '%s: %s (%s %s)' % ( entry['category'], entry['message'], entry['author'], entry['revision'] )
+	return '%s: %s (%s %s)\n' % ( entry['category'], entry['message'], entry['author'], entry['revision'] )
 
 def category( msg, output='text' ):
 	
