@@ -228,7 +228,10 @@ def by_author( logs, output='text' ):
 		print msg % entries
 
 def message( entry, output='text' ):
-	return '%s: %s (%s %s)\n' % ( entry['category'], entry['message'], entry['author'], entry['revision'] )
+	txt = '%s: %s (%s %s)\n' % ( entry['category'], entry['message'], entry['author'], entry['revision'] )
+	if output == 'rss':
+		txt = txt.replace( '\n', '<br />\n' )
+	return txt
 
 def category( msg, output='text' ):
 	
@@ -248,7 +251,7 @@ def category( msg, output='text' ):
 		
 		txt  = '<item>\n'
 		txt += '<title>Changelog - %s</title>\n' % msg
-		txt += '<description>%s</description>\n'
+		txt += '<description><![CDATA[%s]]></description>\n'
 		txt += '<guid isPermalink="false">%s</guid>\n' % msg
 		txt += '</item>\n'
 	
