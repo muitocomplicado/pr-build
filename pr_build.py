@@ -457,8 +457,8 @@ def log_repo( path, start, end ):
 	
 	return pr_svn.log( path, revision, True )
 
-def paths_repo( file, patch, remove='/trunk/' ):
-	return pr_svn.get_paths( file, remove )
+def paths_repo( log, patch, remove='/trunk/' ):
+	return pr_svn.get_paths( log, remove )
 
 def build_archives( path, archives, sufix='' ):
 	
