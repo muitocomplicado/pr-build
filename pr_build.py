@@ -460,7 +460,7 @@ def log_repo( path, start, end ):
 	
 	verbose( 'Log %s revision %s' % ( path, revision ), False )
 	
-	return pr_svn.log( path, revision, True )
+	return pr_svn.log( path, revision, True, True )
 
 def paths_repo( log, patch, remove='/trunk/' ):
 	return pr_svn.get_paths( log, remove )

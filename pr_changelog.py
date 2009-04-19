@@ -136,7 +136,7 @@ def main(argv=None):
 		if options['output'] not in ['text', 'bbcode', 'rss', 'test']:
 			raise Usage( 'Incorrect output format (text, bbcode, rss, test)' )
 			
-		logs = pr_svn.log( options['path'], options['revision'], options['multi'], options['default'] )
+		logs = pr_svn.log( options['path'], options['revision'], False, options['multi'], options['default'] )
 		
 		if options['hide'] in [ True, False ]:
 			logs = hide( logs, options['hide'] )

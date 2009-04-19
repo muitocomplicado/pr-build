@@ -8,7 +8,7 @@ import tempfile
 
 from xml.dom import minidom
 
-def log( path, revision=None, multi=False, default='GENERAL' ):
+def log( path, revision=None, empty=True, multi=False, default='GENERAL' ):
 	
 	cmd = 'svn log %s -v --xml' % path
 	
@@ -21,7 +21,7 @@ def log( path, revision=None, multi=False, default='GENERAL' ):
 	
 	os.system( '%s > %s' % ( cmd, abspath ) )
 	
-	return get_log( abspath, multi, default )
+	return get_log( abspath, empty, multi, default )
 
 def update( path, revision=None, quiet=True ):
 	
@@ -79,7 +79,7 @@ def get_paths( logs, remove='/trunk/' ):
 	paths.sort()
 	return paths
 
-def get_log( file, multi=False, default='GENERAL' ):
+def get_log( file, empty=True, multi=False, default='GENERAL' ):
 	
 	logs = []
 	
@@ -91,7 +91,11 @@ def get_log( file, multi=False, default='GENERAL' ):
 		
 		try:
 			m = str( log.getElementsByTagName('msg')[0].firstChild.nodeValue )
-		except: continue
+		except: 
+			if not empty:
+				continue
+			else:
+				m = ''
 		
 		d = str( log.getElementsByTagName('date')[0].firstChild.nodeValue )
 		d = d[0:10]
