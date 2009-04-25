@@ -10,6 +10,7 @@ import fnmatch
 import compileall
 
 from xml.dom import minidom
+from time import sleep
 
 import pr_svn
 
@@ -50,11 +51,13 @@ Other options:
 	-q --quiet      run it quietly
 '''
 
-core_path      = os.path.join( os.curdir, 'core' )
-levels_path    = os.path.join( os.curdir, 'levels' )
-installer_path = os.path.join( os.curdir, 'installer' )
-builds_path    = os.path.join( os.curdir, 'builds' )
-logs_path      = os.path.join( os.curdir, 'logs' )
+root_path = os.path.dirname(__file__) # os.curdir
+
+core_path      = os.path.join( root_path, 'core' )
+levels_path    = os.path.join( root_path, 'levels' )
+installer_path = os.path.join( root_path, 'installer' )
+builds_path    = os.path.join( root_path, 'builds' )
+logs_path      = os.path.join( root_path, 'logs' )
 
 core_build     = os.path.join( builds_path, 'core' )
 levels_build   = os.path.join( builds_path, 'levels' )
@@ -213,9 +216,11 @@ def main(argv=None):
 		
 			if options['patch']:
 				build_patch( options['patch'] )
+				# sleep(10)
 		
 		if options['server']:
 			build_server( options['patch'] )
+			# sleep(10)
 		
 		if options['installer']:
 			if options['build']:
@@ -225,6 +230,9 @@ def main(argv=None):
 					levels_installer( options['number'], options['test'] )
 			if options['server']:
 				server_installer( options['number'], options['test'] )
+			# sleep(10)
+		
+		verbose( 'DONE', True )
 	
 	except Usage, err:
 		print >> sys.stderr, sys.argv[0].split("/")[-1] + ": " + str(err.msg)
@@ -252,6 +260,8 @@ def build_client( patch ):
 		
 		update_repo( core_path, core_revision )
 		update_repo( levels_path, levels_revision )
+		
+		# sleep(10)
 	
 	if options['export']:
 		verbose( 'REPO EXPORT %s' % patch )
@@ -279,6 +289,8 @@ def build_client( patch ):
 				copy( os.path.join( levels_path, path), os.path.join( lb, path ) )
 			
 			update_archives( patch )
+		
+		# sleep(10)
 	
 	verbose( 'ARCHIVE %s' % patch )
 	
@@ -288,6 +300,8 @@ def build_client( patch ):
 				os.path.join( cb, 'shaders_client_pr%s.zip' % sufix ) )
 	copy( os.path.join( cb, 'shaders_client%s.zip' % sufix ), 
 				os.path.join( cb, 'shaders_night_client_%s.zip' % sufix ) )
+	
+	# sleep(10)
 	
 	verbose( 'CLEANUP %s' % patch )
 	
@@ -299,6 +313,8 @@ def build_client( patch ):
 	delete( lb, 'assets', True )
 	delete( lb, 'server', True )
 	
+	# sleep(10)
+	
 	# rename( os.path.join( cb, 'settings', 'usersettings.con' ), os.path.join( cb, 'settings', 'prserverusersettings.con' ) )
 	
 	if patch:
@@ -306,6 +322,8 @@ def build_client( patch ):
 		
 		merge( cb, core_build )
 		merge( lb, levels_build )
+		
+		# sleep(10)
 
 def build_python( patch ):
 	
