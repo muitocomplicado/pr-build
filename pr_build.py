@@ -55,7 +55,6 @@ root_path = os.path.dirname(__file__) # os.curdir
 
 core_path      = os.path.join( root_path, 'core' )
 levels_path    = os.path.join( root_path, 'levels' )
-installer_path = os.path.join( root_path, 'installer' )
 builds_path    = os.path.join( root_path, 'builds' )
 logs_path      = os.path.join( root_path, 'logs' )
 
@@ -70,6 +69,7 @@ levels_build_patch = os.path.join( builds_path, 'levels_patch' )
 exec_7zip  = os.path.abspath( os.path.join( core_path, 'readme', 'assets', '7za.exe' ) )
 exec_inno  = 'C:\\Program Files (x86)\\Inno Setup 5\\Compil32.exe'
 
+installer_path = os.path.join( core_path, 'readme', 'assets', 'builds', 'installer' )
 core_installer_path   = os.path.join( installer_path, 'pr_core_base.iss' )
 levels_installer_path = os.path.join( installer_path, 'pr_levels_base.iss' )
 patch_installer_path  = os.path.join( installer_path, 'pr_patch_base.iss' )

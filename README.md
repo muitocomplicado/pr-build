@@ -48,10 +48,6 @@ Requires Python 2.3+
 
 	/core (working copy for core repo trunk folder)
 	/levels (working copy for maps repo levels folder)
-	/installer (installer base scripts)
-		pr_core_base.iss
-		pr_levels_base.iss
-		pr_patch_base.iss
 	/builds
 	pr_build.py
 
