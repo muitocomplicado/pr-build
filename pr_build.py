@@ -397,6 +397,8 @@ def server_installer( number, test ):
 	
 	filename = os.path.join( builds_path, 'pr_%s_server.zip' % number )
 	
+	delete( server_build_renamed )
+	
 	rename( server_build, server_build_renamed )
 	delete( filename )
 	zip( server_build_renamed, filename, '', True )
