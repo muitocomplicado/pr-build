@@ -89,11 +89,6 @@ def main(argv=None):
 		except getopt.error, msg:
 			raise Usage(msg)
 		
-		try:
-			options['path'] = args[0]
-		except:
-			raise Usage('Missing PATH or URL argument.')
-		
 		options['revision'] = '{"' + lastweek.isoformat() + 'T00:00Z"}:HEAD'
 		
 		for option, value in opts:
@@ -132,6 +127,11 @@ def main(argv=None):
 				options['verbose'] = '-v'
 			if option in ("-q", "--quiet"):
 				options['quiet'] = '-q'
+		
+		try:
+			options['path'] = args[0]
+		except:
+			raise Usage('Missing PATH or URL argument.')
 		
 		if options['output'] not in ['text', 'bbcode', 'rss', 'test']:
 			raise Usage( 'Incorrect output format (text, bbcode, rss, test)' )
