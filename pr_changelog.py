@@ -262,7 +262,7 @@ def by_author( logs, output='text' ):
 def message( entry, output='text' ):
 	
 	if output == 'test':
-		txt = '[QUOTE]Test: %s[/QUOTE]\n\n' % entry['message']
+		txt = '[QUOTE]Test: %s (%s) %s[/QUOTE]\n\n' % ( entry['message'], entry['author'], entry['revision'] )
 	
 	if output in ['text','bbcode','rss']:
 		txt = '%s: %s (%s) %s\n' % ( entry['category'], entry['message'], entry['author'], entry['revision'] )
