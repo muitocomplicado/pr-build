@@ -288,8 +288,6 @@ def build_client( patch ):
 			for path in paths_repo( levels_log, patch, '/levels/' ):
 				copy( os.path.join( levels_path, path), os.path.join( lb, path ) )
 			
-			update_archives( patch )
-		
 		# sleep(10)
 	
 	verbose( 'ARCHIVE %s' % patch )
@@ -300,6 +298,7 @@ def build_client( patch ):
 				os.path.join( cb, 'shaders_client_pr%s.zip' % sufix ) )
 	copy( os.path.join( cb, 'shaders_client%s.zip' % sufix ), 
 				os.path.join( cb, 'shaders_night_client_%s.zip' % sufix ) )
+	update_archives( patch )
 	
 	# sleep(10)
 	
@@ -533,15 +532,19 @@ def update_archives( patch ):
 	
 	for type,filecon in archives_con.iteritems():
 		
-		filename = os.path.join( path_core_build( patch ), filecon )
+		repo_filecon  = os.path.join( core_path, filecon )
+		build_filecon = os.path.join( core_build, filecon )
+		patch_filecon = os.path.join( path_core_build( patch ), filecon )
 		
-		if not os.path.exists( filename ):
-			copy( os.path.join( core_path, filecon ), filename )
+		copy( repo_filecon, patch_filecon )
+		
+		if not patch:
+			continue
 		
 		archive_content = ''
 		patch_replacer  = 'rem patch'
 		
-		f = open( os.path.join( core_build, filecon ), 'r' )
+		f = open( build_filecon, 'r' )
 		for line in f:
 			archive_content += line
 		f.close()
@@ -555,7 +558,7 @@ def update_archives( patch ):
 				
 				ps = os.path.join( path_core_build( i ), p.replace('/',os.sep) )
 				
-				if os.path.exists( '%s-zip' % ps ) or os.path.exists( '%s_patch%s.zip' % ( ps, i ) ):
+				if os.path.exists( '%s_patch%s.zip' % ( ps, i ) ):
 					verbose( 'Updating %s to mount %s_patch%s.zip' % ( filecon, p, i ), False )
 					patch_content += 'fileManager.mountArchive %s_patch%s.zip %s\n' % ( p, i, o )
 			
@@ -564,9 +567,11 @@ def update_archives( patch ):
 			else:
 				archive_content = patch_content + archive_content
 		
-		g = open( filename, 'w' )
+		g = open( patch_filecon, 'w' )
 		g.write( archive_content )
 		g.close()
+	
+		copy( patch_filecon, build_filecon )
 
 def verbose( text, prefix=True ):
 	if options['verbose']:
