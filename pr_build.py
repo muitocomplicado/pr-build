@@ -86,7 +86,7 @@ archives_con = {
 core_archives = {
 	'client': {
 		'common_client': 'Common', 
-		'menu/fonts_client': 'Menu', 
+		'menu/fonts_client': 'Fonts', 
 		'menu/menu_client': 'Menu',
 		'objects/objects_client': 'Objects',
 		'shaders_client': 'Shaders'
