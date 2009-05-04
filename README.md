@@ -17,15 +17,15 @@ Requires Python 2.3+
 
 	Main options:
 
-		-c --core       revisions separated by commas (no spaces)
-		-l --levels     revisions separated by commas (no spaces)
-		-n --number     version number (e.g. 0856)
+		-c --core         revisions separated by commas (no spaces)
+		-l --levels       revisions separated by commas (no spaces)
+		-n --number       version number (e.g. 0856)
 
 	Build options:
 
-		-b --build      make a client build
-		-s --server     make a server build
-		-t --test       make a test build
+		-b --build        make a client build
+		-s --server       make a server build
+		-t --test         make a test build
 
 	Examples:
 
@@ -34,15 +34,16 @@ Requires Python 2.3+
 
 	Other options:
 
-		-k --skip       skip to the last patch (must have all other builds ready)
+		-k --skip         skip to the last patch (must have all other builds ready)
+		-p --paused       pauses after each major subversion command
 
-		-y --python     do not compile python
-		-i --installer  do not create installers
-		-u --update     do not update the repo
-		-e --export     do not export the repo
+		-y --python       do not compile python
+		-i --installer    do not create installers
+		-u --update       do not update the repo
+		-e --export       do not export the repo
 
-		-v --verbose    run it verbosely
-		-q --quiet      run it quietly
+		-v --verbose      run it verbosely
+		-q --quiet        run it quietly
 
 ### Directory structure:
 

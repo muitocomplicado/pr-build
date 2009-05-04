@@ -23,15 +23,15 @@ Usage:
 
 Main options:
 
-	-c --core       revisions separated by commas (no spaces)
-	-l --levels     revisions separated by commas (no spaces)
-	-n --number     version number (e.g. 0856)
+	-c --core         revisions separated by commas (no spaces)
+	-l --levels       revisions separated by commas (no spaces)
+	-n --number       version number (e.g. 0856)
 
 Build options:
 
-	-b --build      make a client build
-	-s --server     make a server build
-	-t --test       make a test build
+	-b --build        make a client build
+	-s --server       make a server build
+	-t --test         make a test build
 
 Examples:
 
@@ -40,15 +40,16 @@ Examples:
 
 Other options:
 
-	-k --skip       skip to the last patch (must have all other builds ready)
+	-k --skip         skip to the last patch (must have all other builds ready)
+	-p --paused       pauses after each major subversion command
 
-	-y --python     do not compile python
-	-i --installer  do not create installers
-	-u --update     do not update the repo
-	-e --export     do not export the repo
-
-	-v --verbose    run it verbosely
-	-q --quiet      run it quietly
+	-y --python       do not compile python
+	-i --installer    do not create installers
+	-u --update       do not update the repo
+	-e --export       do not export the repo
+                    
+	-v --verbose      run it verbosely
+	-q --quiet        run it quietly
 '''
 
 root_path = os.path.dirname(__file__) # os.curdir
@@ -108,6 +109,7 @@ options = {
 	'server': False,
 	'test': False,
 	'skip': False,
+	'paused': False,
 	
 	'python': True,
 	'installer': True,
@@ -131,9 +133,9 @@ def main(argv=None):
 	try:
 		try:
 			opts, args = getopt.getopt(argv[1:], 
-				"hc:l:n:bstkyiuevq", 
+				"hc:l:n:bstkpyiuevq", 
 				[ "help", "core=", "levels=", "number=", "build", "server", "test", "skip", 
-					"python", "installer", "update", "export", "verbose", "quiet" ])
+					"paused", "python", "installer", "update", "export", "verbose", "quiet" ])
 		except getopt.error, msg:
 			raise Usage(msg)
 		
@@ -157,6 +159,8 @@ def main(argv=None):
 				options['test'] = True
 			if option in ("-k", "--skip"):
 				options['skip'] = True
+			if option in ("-p", "--paused"):
+				options['paused'] = True
 			
 			if option in ("-y", "--python"):
 				options['python'] = False
@@ -464,11 +468,13 @@ def update_repo( path, revision ):
 	
 	verbose( 'Updating %s to revision %s' % ( path, revision ), False )
 	pr_svn.update( path, revision, options['quiet'] )
+	pause()
 
 def export_repo( path, destination ):
 	
 	verbose( 'Exporting %s to %s' % ( path, destination ), False )
 	pr_svn.export( path, destination, options['quiet'] )
+	pause()
 
 def log_repo( path, start, end ):
 	
@@ -479,7 +485,10 @@ def log_repo( path, start, end ):
 	
 	verbose( 'Log %s revision %s' % ( path, revision ), False )
 	
-	return pr_svn.log( path, revision, True, True )
+	logs = pr_svn.log( path, revision, True, True )
+	pause()
+	
+	return logs
 
 def paths_repo( log, patch, remove='/trunk/' ):
 	return pr_svn.get_paths( log, remove )
@@ -724,6 +733,9 @@ def merge( source, destination ):
 		copy( source, destination )
 	else:
 		os.system( 'xcopy "%s" "%s" /E /Q /I /Y' % ( source, destination ) )
+
+def pause():
+	os.system('pause')
 
 
 if __name__ == "__main__":
