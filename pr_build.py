@@ -98,6 +98,8 @@ core_archives = {
 	}
 }
 
+nopatch_archives = [ 'menu/fonts_client' ]
+
 options = {
 	'core': None,
 	'levels': None,
@@ -489,6 +491,9 @@ def build_archives( path, archives, sufix='' ):
 	
 	for p,o in archives.iteritems():
 		
+		if p in nopatch_archives:
+			sufix = ''
+		
 		dir  = os.path.join( path, '%s-zip'   % ( p.replace('/',os.sep) ) )
 		file = os.path.join( path, '%s%s.zip' % ( p.replace('/',os.sep), sufix ) )
 		
@@ -552,6 +557,10 @@ def update_archives( patch ):
 			
 			patch_content = ''
 			for p,o in core_archives[type].iteritems():
+				
+				if p in nopatch_archives:
+					continue
+				
 				ps = os.path.join( path_core_build( i ), p.replace('/',os.sep) )
 				
 				if os.path.exists( '%s-zip' % ps ) or os.path.exists( '%s_patch%s.zip' % ( ps, i ) ):
