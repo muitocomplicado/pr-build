@@ -47,6 +47,7 @@ Other options:
 	-i --installer    do not create installers
 	-u --update       do not update the repo
 	-e --export       do not export the repo
+	-a --archive      do not compile archives
                     
 	-v --verbose      run it verbosely
 	-q --quiet        run it quietly
@@ -115,6 +116,7 @@ options = {
 	'installer': True,
 	'update': True,
 	'export': True,
+	'archive': True,
 	
 	'verbose': '',
 	'quiet': ''
@@ -133,9 +135,9 @@ def main(argv=None):
 	try:
 		try:
 			opts, args = getopt.getopt(argv[1:], 
-				"hc:l:n:bstkpyiuevq", 
-				[ "help", "core=", "levels=", "number=", "build", "server", "test", "skip", 
-					"paused", "python", "installer", "update", "export", "verbose", "quiet" ])
+				"hc:l:n:bstkpyiueavq", 
+				[ "help", "core=", "levels=", "number=", "build", "server", "test", "skip", "paused", 
+					"python", "installer", "update", "export", "archive", "verbose", "quiet" ])
 		except getopt.error, msg:
 			raise Usage(msg)
 		
@@ -170,6 +172,8 @@ def main(argv=None):
 				options['update'] = False
 			if option in ("-e", "--export"):
 				options['export'] = False
+			if option in ("-a", "--archive"):
+				options['archive'] = False
 			
 			if option in ("-v", "--verbose"):
 				options['verbose'] = '-v'
@@ -220,11 +224,9 @@ def main(argv=None):
 		
 			if options['patch']:
 				build_patch( options['patch'] )
-				# sleep(10)
 		
 		if options['server']:
 			build_server( options['patch'] )
-			# sleep(10)
 		
 		if options['installer']:
 			if options['build']:
@@ -234,7 +236,6 @@ def main(argv=None):
 					levels_installer( options['number'], options['test'] )
 			if options['server']:
 				server_installer( options['number'], options['test'] )
-			# sleep(10)
 		
 		verbose( 'DONE', True )
 	
@@ -265,8 +266,6 @@ def build_client( patch ):
 		update_repo( core_path, core_revision )
 		update_repo( levels_path, levels_revision )
 		
-		# sleep(10)
-	
 	if options['export']:
 		verbose( 'REPO EXPORT %s' % patch )
 		
@@ -292,31 +291,26 @@ def build_client( patch ):
 			for path in paths_repo( levels_log, patch, '/levels/' ):
 				copy( os.path.join( levels_path, path), os.path.join( lb, path ) )
 			
-		# sleep(10)
+	if options['archive']:
+		verbose( 'ARCHIVE %s' % patch )
 	
-	verbose( 'ARCHIVE %s' % patch )
-	
-	build_archives( cb, core_archives['server'], sufix )
-	build_archives( cb, core_archives['client'], sufix )
-	copy( os.path.join( cb, 'shaders_client%s.zip' % sufix ), 
-				os.path.join( cb, 'shaders_client_pr%s.zip' % sufix ) )
-	copy( os.path.join( cb, 'shaders_client%s.zip' % sufix ), 
-				os.path.join( cb, 'shaders_night_client_%s.zip' % sufix ) )
-	update_archives( patch )
-	
-	# sleep(10)
+		build_archives( cb, core_archives['server'], sufix )
+		build_archives( cb, core_archives['client'], sufix )
+		copy( os.path.join( cb, 'shaders_client%s.zip' % sufix ), 
+					os.path.join( cb, 'shaders_client_pr%s.zip' % sufix ) )
+		copy( os.path.join( cb, 'shaders_client%s.zip' % sufix ), 
+					os.path.join( cb, 'shaders_night_client_%s.zip' % sufix ) )
 	
 	verbose( 'CLEANUP %s' % patch )
-	
+
 	clean_archives( cb, core_archives['server'] )
 	clean_archives( cb, core_archives['client'] )
+	update_archives( patch )
 	delete( os.path.join( cb, 'build_pr_new.bat' ) )
 	delete( os.path.join( cb, 'readme', 'assets' ) )
 	delete( cb, 'bst*.md5' )
 	delete( lb, 'assets', True )
 	delete( lb, 'server', True )
-	
-	# sleep(10)
 	
 	# rename( os.path.join( cb, 'settings', 'usersettings.con' ), os.path.join( cb, 'settings', 'prserverusersettings.con' ) )
 	
@@ -326,8 +320,6 @@ def build_client( patch ):
 		merge( cb, core_build )
 		merge( lb, levels_build )
 		
-		# sleep(10)
-
 def build_python( patch ):
 	
 	verbose( 'PYTHON BUILD %s' % patch )
