@@ -299,7 +299,7 @@ def build_client( patch ):
 		copy( os.path.join( cb, 'shaders_client%s.zip' % sufix ), 
 					os.path.join( cb, 'shaders_client_pr%s.zip' % sufix ) )
 		copy( os.path.join( cb, 'shaders_client%s.zip' % sufix ), 
-					os.path.join( cb, 'shaders_night_client_%s.zip' % sufix ) )
+					os.path.join( cb, 'shaders_night_client%s.zip' % sufix ) )
 	
 	verbose( 'CLEANUP %s' % patch )
 
@@ -376,7 +376,6 @@ def build_server( patch ):
 	delete( os.path.join( server_build, 'movies' ) )
 	delete( os.path.join( server_build, '00000000.256' ) )
 	delete( os.path.join( server_build, 'pr.exe' ) )
-	delete( os.path.join( server_build, 'shaders_client_night.zip' ) )
 	
 	# rename( os.path.join( server_build, 'settings', 'prserverusersettings.con' ), os.path.join( server_build, 'settings', 'usersettings.con' ) )
 	# os.chmod( os.path.join( server_build, 'settings', 'usersettings.con' ), stat.S_IREAD )
