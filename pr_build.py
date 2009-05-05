@@ -553,7 +553,7 @@ def update_archives( patch ):
 		archive_content = ''
 		patch_replacer  = 'rem patch'
 		
-		f = open( build_filecon, 'r' )
+		f = open( repo_filecon, 'r' )
 		for line in f:
 			archive_content += line
 		f.close()
