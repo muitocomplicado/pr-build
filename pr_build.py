@@ -467,7 +467,6 @@ def export_repo( path, destination ):
 	
 	verbose( 'Exporting %s to %s' % ( path, destination ), False )
 	pr_svn.export( path, destination, options['quiet'] )
-	pause()
 
 def log_repo( path, start, end ):
 	
