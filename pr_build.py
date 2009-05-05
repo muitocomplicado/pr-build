@@ -77,7 +77,7 @@ levels_installer_path = os.path.join( installer_path, 'pr_levels_base.iss' )
 patch_installer_path  = os.path.join( installer_path, 'pr_patch_base.iss' )
 
 filter_archives = {
-	'objects/objects_client': '-xr!*.con -xr!*.tweak -xr!*.collisionmesh'
+	'objects/objects_client': ['*.con', '*.tweak', '*.collisionmesh']
 }
 
 archives_con = {
@@ -294,8 +294,8 @@ def build_client( patch ):
 	if options['archive']:
 		verbose( 'ARCHIVE %s' % patch )
 		
-		empty_archives( cb, core_archives['server'] )
-		empty_archives( cb, core_archives['client'] )
+		clean_archives( cb, core_archives['server'] )
+		clean_archives( cb, core_archives['client'] )
 		build_archives( cb, core_archives['server'], sufix )
 		build_archives( cb, core_archives['client'], sufix )
 		copy( os.path.join( cb, 'shaders_client%s.zip' % sufix ), 
@@ -305,8 +305,8 @@ def build_client( patch ):
 	
 	verbose( 'CLEANUP %s' % patch )
 
-	clean_archives( cb, core_archives['server'] )
-	clean_archives( cb, core_archives['client'] )
+	delete_archives( cb, core_archives['server'] )
+	delete_archives( cb, core_archives['client'] )
 	update_archives( patch )
 	delete( os.path.join( cb, 'build_pr_new.bat' ) )
 	delete( os.path.join( cb, 'readme', 'assets' ) )
@@ -486,16 +486,31 @@ def log_repo( path, start, end ):
 def paths_repo( log, patch, remove='/trunk/' ):
 	return pr_svn.get_paths( log, remove )
 
-def empty_archives( path, archives ):
+def clean_archives( path, archives ):
 
 	for p,o in archives.iteritems():
-
+		
 		dir  = os.path.join( path, '%s-zip'   % ( p.replace('/',os.sep) ) )
 		
-		verbose( 'Removing empty folders from %s' % ( dir ), False )
-
 		if not os.path.exists( dir ):
 			continue
+		
+		verbose( 'Cleaning %s' % ( dir ), False )
+		
+		delete( dir, 'assets', True )
+		delete( dir, '*.db', True )
+		delete( dir, '*.samp*', True ) 
+		delete( dir, '*.max', True )
+		delete( dir, '*.3ds', True )
+		delete( dir, '*.psd', True )
+		delete( dir, 'samples.tga', True )
+		delete( dir, 'uvs.tga', True )
+		
+		if p in filter_archives:
+			for f in filter_archives[p]:
+				delete( dir, f, True )
+		
+		verbose( 'Deleting empty folders from %s' % ( dir ), False )
 		
 		for root, dirs, files in os.walk( dir, topdown=False ):
 			for name in dirs:
@@ -514,10 +529,7 @@ def build_archives( path, archives, sufix='' ):
 		if os.path.exists( file ):
 			delete( file )
 		
-		if p not in filter_archives:
-			zip( dir, file )
-		else:
-			zip( dir, file, filter_archives[p] )
+		zip( dir, file )
 
 def compile_python( path ):
 	
@@ -538,12 +550,12 @@ def clean_python( path ):
 	delete( game, 'realityconfig_*.pyc', True, [ 'realityconfig_public.pyc' ] )
 	delete( game, '__init__.pyc', True )
 
-def clean_archives( path, archives ):
+def delete_archives( path, archives ):
 	
 	for p,o in archives.iteritems():
 		dir = os.path.join( path, '%s-zip' % p.replace('/',os.sep) )
 		
-		verbose( 'Cleaning archive folder %s' % dir, False )
+		verbose( 'Deleting archive folder %s' % dir, False )
 		delete( dir )
 
 def update_archives( patch ):
@@ -694,7 +706,7 @@ def zip( source, destination, filters='', folder=False ):
 	if os.name in ['posix','mac']:
 		os.system( 'zip -r %s %s %s -x \*/assets/\* -x \*/.*' % ( options['quiet'], d, s ) ) 
 	else:
-		os.system( '"%s" a -tzip %s %s %s -xr!.svn\\ -xr!Assets\\ -xr!assets\\ -xr!*.db -xr!*.samp* -xr!*.max -xr!*.3ds -xr!*.psd -xr!samples.tga -xr!uvs.tga' % ( exec_7zip, d, s, filters ) )
+		os.system( '"%s" a -tzip %s %s %s -xr!.svn\\ -xr!Assets\\ -xr!assets\\' % ( exec_7zip, d, s, filters ) )
 	
 	os.chdir( root )
 
