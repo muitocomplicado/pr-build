@@ -293,7 +293,9 @@ def build_client( patch ):
 			
 	if options['archive']:
 		verbose( 'ARCHIVE %s' % patch )
-	
+		
+		empty_archives( cb, core_archives['server'] )
+		empty_archives( cb, core_archives['client'] )
 		build_archives( cb, core_archives['server'], sufix )
 		build_archives( cb, core_archives['client'], sufix )
 		copy( os.path.join( cb, 'shaders_client%s.zip' % sufix ), 
@@ -483,6 +485,22 @@ def log_repo( path, start, end ):
 
 def paths_repo( log, patch, remove='/trunk/' ):
 	return pr_svn.get_paths( log, remove )
+
+def empty_archives( path, archives ):
+
+	for p,o in archives.iteritems():
+
+		dir  = os.path.join( path, '%s-zip'   % ( p.replace('/',os.sep) ) )
+		
+		verbose( 'Removing empty folders from %s' % ( dir ), False )
+
+		if not os.path.exists( dir ):
+			continue
+		
+		for root, dirs, files in os.walk( dir, topdown=False ):
+			for name in dirs:
+				if len( os.listdir(os.path.join(root, name)) ) == 0:
+					os.rmdir(os.path.join(root, name))
 
 def build_archives( path, archives, sufix='' ):
 	
