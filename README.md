@@ -41,6 +41,7 @@ Requires Python 2.3+
 		-i --installer    do not create installers
 		-u --update       do not update the repo
 		-e --export       do not export the repo
+		-a --archive      do not compile archives
 
 		-v --verbose      run it verbosely
 		-q --quiet        run it quietly
