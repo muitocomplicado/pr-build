@@ -80,7 +80,7 @@ filter_archives = {
 	'objects/objects_client': ['*.con', '*.tweak', '*.collisionmesh']
 }
 
-empty_archives = {
+old_archives = {
 	8066: {
 		'objects/objects_client': [ 
 			'Vehicles/Air/ch_the_z9', 
@@ -316,13 +316,8 @@ def build_client( patch ):
 		delete( lb, 'server', True )
 		clean_archives( cb, core_archives['server'] )
 		clean_archives( cb, core_archives['client'] )
+		empty_archives( cb )
 		
-		# hack for creating old empty folders
-		for r,paths in empty_archives.iteritems():
-			if core_revision <= r:
-				for p,dirs in paths.iteritems():
-					for d in dirs:
-						os.makedirs( os.path.join( cb, p.replace('/',os.sep) + '-zip', d.replace('/',os.sep) ) )
 	
 	if options['archive']:
 		verbose( 'ARCHIVE %s' % patch )
@@ -506,6 +501,18 @@ def log_repo( path, start, end ):
 
 def paths_repo( log, patch, remove='/trunk/' ):
 	return pr_svn.get_paths( log, remove )
+
+def empty_archives( path ):
+	
+	for rev,paths in old_archives.iteritems():
+		if int( core_revision ) > rev:
+			continue
+		for p,dirs in paths.iteritems():
+			dir = os.path.join( path, p.replace('/',os.sep) + '-zip'
+			if not os.path.exists( dir ):
+				continue
+			for d in dirs:
+				os.makedirs( os.path.join( dir, d.replace('/',os.sep) ) )
 
 def clean_archives( path, archives ):
 
