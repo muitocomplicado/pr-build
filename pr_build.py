@@ -80,6 +80,20 @@ filter_archives = {
 	'objects/objects_client': ['*.con', '*.tweak', '*.collisionmesh']
 }
 
+empty_archives = {
+	8066: {
+		'objects/objects_client': [ 
+			'Vehicles/Air/ch_the_z9', 
+			'Vehicles/Air/gb_the_chinook',
+			'Vehicles/Land/cf_jep_nyala',
+			'Vehicles/Land/ch_jeep_vn3',
+			'Vehicles/Land/gb_apc_scimitar',
+			'Weapons/Handheld/GBLMG_M249MINIMI'
+		]
+	}
+}
+
+
 archives_con = {
 	'client': 'clientarchives.con',
 	'server': 'serverarchives.con'
@@ -291,7 +305,7 @@ def build_client( patch ):
 			
 			for path in paths_repo( levels_log, patch, '/levels/' ):
 				copy( os.path.join( levels_path, path), os.path.join( lb, path ) )
-	
+		
 	if options['cleanup']:
 		verbose( 'CLEANUP %s' % patch )
 
@@ -302,6 +316,13 @@ def build_client( patch ):
 		delete( lb, 'server', True )
 		clean_archives( cb, core_archives['server'] )
 		clean_archives( cb, core_archives['client'] )
+		
+		# hack for creating old empty folders
+		for r,paths in empty_archives.iteritems():
+			if core_revision <= r:
+				for p,dirs in paths.iteritems():
+					for d in dirs:
+						os.makedirs( os.path.join( cb, p.replace('/',os.sep) + '-zip', d.replace('/',os.sep) ) )
 	
 	if options['archive']:
 		verbose( 'ARCHIVE %s' % patch )
