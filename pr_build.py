@@ -48,7 +48,7 @@ Other options:
 	-u --update       do not update the repo
 	-e --export       do not export the repo
 	-a --archive      do not compile archives
-                    
+
 	-v --verbose      run it verbosely
 	-q --quiet        run it quietly
 '''
