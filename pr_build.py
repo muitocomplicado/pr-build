@@ -339,7 +339,7 @@ def build_client( patch ):
 		update_archives( patch )
 	
 	
-	if patch:
+	if patch and ( options['update'] or options['export'] or options['archive'] ):
 		verbose( 'MERGE PATCH %s' % patch )
 		
 		merge( cb, core_build )
