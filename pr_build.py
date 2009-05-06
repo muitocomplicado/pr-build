@@ -207,8 +207,10 @@ def main(argv=None):
 		for r in ['core','levels']:
 			last_rev = 0
 			for rev in options[r]:
-				if last_rev >= rev:
+				if last_rev >= int( rev ):
 					raise Usage('%s revision %s is smaller than the previous revision %s' % ( r, rev, last_rev ) )
+				else:
+					last_rev = int( rev )
 		
 		if options['build']:
 			
@@ -245,10 +247,14 @@ def main(argv=None):
 		
 		if options['installer']:
 			if options['build']:
-				patch_installer( options['number'], options['test'] )
-				if not options['skip']:
+				if len( options['core'] ) == 1:
 					core_installer( options['number'], options['test'] )
 					levels_installer( options['number'], options['test'] )
+				else:
+					patch_installer( options['number'], options['test'] )
+					if not options['skip']:
+						core_installer( options['number'], options['test'] )
+						levels_installer( options['number'], options['test'] )
 			if options['server']:
 				server_installer( options['number'], options['test'] )
 		
