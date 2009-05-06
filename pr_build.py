@@ -508,7 +508,7 @@ def empty_archives( path ):
 		if int( core_revision ) > rev:
 			continue
 		for p,dirs in paths.iteritems():
-			dir = os.path.join( path, p.replace('/',os.sep) + '-zip'
+			dir = os.path.join( path, p.replace('/',os.sep) + '-zip' )
 			if not os.path.exists( dir ):
 				continue
 			for d in dirs:
