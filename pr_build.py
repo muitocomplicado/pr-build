@@ -508,6 +508,13 @@ def clean_archives( path, archives ):
 		if p in filter_archives:
 			for f in filter_archives[p]:
 				delete( dir, f, True )
+		
+		verbose( 'Deleting empty folders from %s' % ( dir ), False )
+		
+		for root, dirs, files in os.walk( dir ):
+			for name in dirs:
+				if len( os.listdir(os.path.join(root, name)) ) == 0:
+					os.rmdir(os.path.join(root, name))
 
 def build_archives( path, archives, sufix='' ):
 	
@@ -660,18 +667,14 @@ def delete( path, pattern=None, recursive=False, exclude=[] ):
 		
 		for p in paths( path, pattern, recursive, exclude ):
 			
-			if os.path.isdir( p ):
-				dir = p
-			else:
-				dir = os.path.dirname( p )
-			
+			r = os.path.dirname( p )
 			delete( p )
 			
-			if not os.path.exists( dir ) or not recursive:
+			if not os.path.exists( r ) or not recursive:
 				continue
 			
-			if len( os.listdir( dir ) ) == 0:
-				os.rmdir( dir )
+			if len( os.listdir( r ) ) == 0:
+				os.rmdir( r )
 		
 	else: 
 		
