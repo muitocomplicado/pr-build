@@ -524,6 +524,9 @@ def build_archives( path, archives, sufix='' ):
 		dir  = os.path.join( path, '%s-zip'   % ( p.replace('/',os.sep) ) )
 		file = os.path.join( path, '%s%s.zip' % ( p.replace('/',os.sep), sufix ) )
 		
+		if not os.path.exists( dir ):
+			continue
+		
 		verbose( 'Building archive %s from %s' % ( file, dir ), False )
 		
 		if os.path.exists( file ):
@@ -554,6 +557,9 @@ def delete_archives( path, archives ):
 	
 	for p,o in archives.iteritems():
 		dir = os.path.join( path, '%s-zip' % p.replace('/',os.sep) )
+		
+		if not os.path.exists( dir ):
+			continue
 		
 		verbose( 'Deleting archive folder %s' % dir, False )
 		delete( dir )
