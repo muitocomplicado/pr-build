@@ -316,7 +316,7 @@ def build_client( patch ):
 		delete( lb, 'server', True )
 		clean_archives( cb, core_archives['server'] )
 		clean_archives( cb, core_archives['client'] )
-		empty_archives( cb )
+		empty_archives( cb, core_revision )
 		
 	
 	if options['archive']:
@@ -502,10 +502,10 @@ def log_repo( path, start, end ):
 def paths_repo( log, patch, remove='/trunk/' ):
 	return pr_svn.get_paths( log, remove )
 
-def empty_archives( path ):
+def empty_archives( path, revision ):
 	
 	for rev,paths in old_archives.iteritems():
-		if int( core_revision ) > rev:
+		if revision > rev:
 			continue
 		for p,dirs in paths.iteritems():
 			dir = os.path.join( path, p.replace('/',os.sep) + '-zip' )
