@@ -117,6 +117,7 @@ options = {
 	'update': True,
 	'export': True,
 	'archive': True,
+	'cleanup': True,
 	
 	'verbose': '',
 	'quiet': ''
@@ -290,31 +291,31 @@ def build_client( patch ):
 			
 			for path in paths_repo( levels_log, patch, '/levels/' ):
 				copy( os.path.join( levels_path, path), os.path.join( lb, path ) )
-			
+	
+	if options['cleanup']:
+		verbose( 'CLEANUP %s' % patch )
+
+		delete( os.path.join( cb, 'build_pr_new.bat' ) )
+		delete( os.path.join( cb, 'readme', 'assets' ) )
+		delete( cb, 'bst*.md5' )
+		delete( lb, 'assets', True )
+		delete( lb, 'server', True )
+		clean_archives( cb, core_archives['server'] )
+		clean_archives( cb, core_archives['client'] )
+	
 	if options['archive']:
 		verbose( 'ARCHIVE %s' % patch )
 		
-		clean_archives( cb, core_archives['server'] )
-		clean_archives( cb, core_archives['client'] )
 		build_archives( cb, core_archives['server'], sufix )
 		build_archives( cb, core_archives['client'], sufix )
 		copy( os.path.join( cb, 'shaders_client%s.zip' % sufix ), 
 					os.path.join( cb, 'shaders_client_pr%s.zip' % sufix ) )
 		copy( os.path.join( cb, 'shaders_client%s.zip' % sufix ), 
 					os.path.join( cb, 'shaders_night_client%s.zip' % sufix ) )
+		delete_archives( cb, core_archives['server'] )
+		delete_archives( cb, core_archives['client'] )
+		update_archives( patch )
 	
-	verbose( 'CLEANUP %s' % patch )
-
-	delete_archives( cb, core_archives['server'] )
-	delete_archives( cb, core_archives['client'] )
-	update_archives( patch )
-	delete( os.path.join( cb, 'build_pr_new.bat' ) )
-	delete( os.path.join( cb, 'readme', 'assets' ) )
-	delete( cb, 'bst*.md5' )
-	delete( lb, 'assets', True )
-	delete( lb, 'server', True )
-	
-	# rename( os.path.join( cb, 'settings', 'usersettings.con' ), os.path.join( cb, 'settings', 'prserverusersettings.con' ) )
 	
 	if patch:
 		verbose( 'MERGE PATCH %s' % patch )
@@ -683,13 +684,15 @@ def delete( path, pattern=None, recursive=False, exclude=[] ):
 		if os.path.isdir( path ):
 			for root, dirs, files in os.walk(path, topdown=False):
 				for name in files:
+					os.chmod(os.path.join(root, name), stat.S_IWRITE)
 					os.remove(os.path.join(root, name))
 				for name in dirs:
 					os.rmdir(os.path.join(root, name))
-			os.rmdir( path )
+			os.rmdir(path)
 			# os.system( 'rd /S %s %s' % ( q, path ) )
 		else:
-			os.remove( path )
+			os.chmod(path, stat.S_IWRITE)
+			os.remove(path)
 			# os.system( 'del /F %s %s %s' % ( q, r, path ) )
 		
 def zip( source, destination, filters='', folder=False ):
