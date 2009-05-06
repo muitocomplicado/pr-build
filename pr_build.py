@@ -512,7 +512,7 @@ def clean_archives( path, archives ):
 		
 		verbose( 'Deleting empty folders from %s' % ( dir ), False )
 		
-		for root, dirs, files in os.walk( dir ):
+		for root, dirs, files in os.walk( dir, topdown=False ):
 			for name in dirs:
 				if len( os.listdir(os.path.join(root, name)) ) == 0:
 					os.rmdir(os.path.join(root, name))
