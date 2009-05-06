@@ -800,7 +800,8 @@ def merge( source, destination ):
 		os.system( 'xcopy "%s" "%s" /E /Q /I /Y' % ( source, destination ) )
 
 def pause():
-	os.system('pause')
+	if options['paused']:
+		os.system('pause')
 
 
 if __name__ == "__main__":
