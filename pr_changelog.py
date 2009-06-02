@@ -68,6 +68,7 @@ options = {
 }
 
 today = datetime.date.today()
+today_rfc = datetime.datetime.utcnow().strftime('%a, %d %b %Y %H:%M:%S GMT')
 yesterday = datetime.date.fromtimestamp(time.time()-60*60*24)
 lastweek = datetime.date.fromtimestamp(time.time()-60*60*24*7)
 
@@ -168,6 +169,8 @@ def header( path, revision, output='text' ):
 		print '<link>http://realitymod.com</link>'
 		print '<description>Latest changelog information.</description>'
 		print '<language>en-us</language>'
+		print '<pubDate>%s</pubDate>' % today_rfc
+		print '<lastBuildDate>%s</lastBuildDate>' % today_rfc
 	
 	if output == 'test':
 		print '[QUOTE][B]How To Use This Test List:[/B]'
@@ -240,7 +243,7 @@ def by_date( logs, output='text' ):
 	for g in groups:
 		
 		date = datetime.date( int( g[0:4] ), int( g[5:7] ), int( g[8:10] ) )
-		msg = category( date.strftime('%a, %d %B %Y'), output )
+		msg = category( date.strftime('%a, %d %b %Y'), output )
 		
 		entries = ''
 		for entry in logs_date[g]:
@@ -291,6 +294,7 @@ def category( msg, output='text' ):
 		txt  = '<item>\n'
 		txt += '<title>Changelog - %s</title>\n' % msg
 		txt += '<description><![CDATA[%s]]></description>\n'
+		txt += '<pubDate>%s %s</pubDate>\n' % ( msg, '23:59:59 GMT' )
 		txt += '<guid isPermalink="false">%s</guid>\n' % msg
 		txt += '</item>\n'
 	
