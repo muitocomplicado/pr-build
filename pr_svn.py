@@ -88,14 +88,16 @@ def get_log( file, empty=True, multi=False, default='GENERAL' ):
 	for log in xmldoc.getElementsByTagName('logentry'):
 		
 		r = str( log.getAttribute('revision') )
+		m = ''
 		
 		try:
 			m = str( log.getElementsByTagName('msg')[0].firstChild.nodeValue )
-		except: 
-			if not empty:
-				continue
-			else:
-				m = ''
+		except: pass
+		
+		m = m.strip()
+		
+		if not empty and len( m ) == 0:
+			continue
 		
 		d = str( log.getElementsByTagName('date')[0].firstChild.nodeValue )
 		d = d[0:10]
