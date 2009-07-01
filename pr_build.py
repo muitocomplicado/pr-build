@@ -43,11 +43,11 @@ Other options:
 	-k --skip         skip to the last patch (must have all other builds ready)
 	-p --paused       pauses after each major subversion command
 
+	-y --python       do not compile python
+	-i --installer    do not create installers
 	-u --update       do not update the repo
 	-e --export       do not export the repo
 	-a --archive      do not compile archives
-	-y --python       do not compile python
-	-i --installer    do not create installers
 
 	-v --verbose      run it verbosely
 	-q --quiet        run it quietly
@@ -339,7 +339,7 @@ def build_client( patch ):
 		update_archives( patch )
 	
 	
-	if patch and ( options['update'] or options['export'] or options['archive'] ):
+	if patch:
 		verbose( 'MERGE PATCH %s' % patch )
 		
 		merge( cb, core_build )
