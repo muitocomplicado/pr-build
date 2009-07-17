@@ -303,12 +303,12 @@ def build_client( patch ):
 			core_lrevision   = int( options['core'][patch-1] )+1
 			levels_lrevision = int( options['levels'][patch-1] )+1
 			
-			if core_lrevision < core_revision:
+			if core_lrevision < int( core_revision ):
 				core_log   = log_repo( core_path, core_lrevision, core_revision )
 				for path in paths_repo( core_log, patch, '/trunk/' ):
 					copy( os.path.join( core_path, path ), os.path.join( cb, path ) )
 			
-			if levels_lrevision < levels_revision:
+			if levels_lrevision < int( levels_revision ):
 				levels_log = log_repo( levels_path, levels_lrevision, levels_revision )
 				for path in paths_repo( levels_log, patch, '/levels/' ):
 					copy( os.path.join( levels_path, path), os.path.join( lb, path ) )
