@@ -53,7 +53,7 @@ Other options:
 	-q --quiet        run it quietly
 '''
 
-root_path = os.path.dirname(__file__) # os.curdir
+root_path = os.curdir # os.path.dirname(__file__)
 
 core_path      = os.path.join( root_path, 'core' )
 levels_path    = os.path.join( root_path, 'levels' )
@@ -207,7 +207,7 @@ def main(argv=None):
 		for r in ['core','levels']:
 			last_rev = 0
 			for rev in options[r]:
-				if last_rev >= int( rev ):
+				if last_rev > int( rev ):
 					raise Usage('%s revision %s is smaller than the previous revision %s' % ( r, rev, last_rev ) )
 				else:
 					last_rev = int( rev )
@@ -303,14 +303,15 @@ def build_client( patch ):
 			core_lrevision   = int( options['core'][patch-1] )+1
 			levels_lrevision = int( options['levels'][patch-1] )+1
 			
-			core_log   = log_repo( core_path,   core_lrevision,   core_revision )
-			levels_log = log_repo( levels_path, levels_lrevision, levels_revision )
+			if core_lrevision < core_revision:
+				core_log   = log_repo( core_path, core_lrevision, core_revision )
+				for path in paths_repo( core_log, patch, '/trunk/' ):
+					copy( os.path.join( core_path, path ), os.path.join( cb, path ) )
 			
-			for path in paths_repo( core_log, patch, '/trunk/' ):
-				copy( os.path.join( core_path, path ), os.path.join( cb, path ) )
-			
-			for path in paths_repo( levels_log, patch, '/levels/' ):
-				copy( os.path.join( levels_path, path), os.path.join( lb, path ) )
+			if levels_lrevision < levels_revision:
+				levels_log = log_repo( levels_path, levels_lrevision, levels_revision )
+				for path in paths_repo( levels_log, patch, '/levels/' ):
+					copy( os.path.join( levels_path, path), os.path.join( lb, path ) )
 		
 	if options['cleanup']:
 		verbose( 'CLEANUP %s' % patch )
