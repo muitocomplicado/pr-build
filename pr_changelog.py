@@ -228,6 +228,7 @@ def by_category( logs, output='text', zip=False ):
 	
 	logs_grouped = grouped( logs, 'category', zip )
 	groups = logs_grouped.keys()
+	groups.sort(compare)
 	
 	for g in groups:
 	
@@ -243,6 +244,7 @@ def by_date( logs, output='text', zip=False ):
 	
 	logs_grouped = grouped( logs, 'date', zip )
 	groups = logs_grouped.keys()
+	groups.sort(compare)
 	groups.reverse()
 	
 	for g in groups:
@@ -260,6 +262,7 @@ def by_author( logs, output='text', zip=False ):
 	
 	logs_grouped = grouped( logs, 'author', zip )
 	groups = logs_grouped.keys()
+	groups.sort(compare)
 	
 	for g in groups:
 		
