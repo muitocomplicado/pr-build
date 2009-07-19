@@ -23,7 +23,7 @@ Main options:
 	-r --revision    revision range
 	-t --today       current day of changes
 	-y --yesterday   previous day of changes
-	-w --week        last week of changes
+	-w --week        last week of changes (doesn't include current day)
 
 Examples:
 
@@ -42,8 +42,6 @@ Other options:
 	                 other: bbcode, rss, test
 	
 	-d --default     set the default category (GENERAL)
-	-z --zip         removes the first and last groups
-	
 	-m --multi       group multiline entries
 	-x --xxx         hide all comments with xxxx
 	-f --fun         hide all comments except first and last letter of each word
@@ -60,7 +58,6 @@ options = {
 	'category': False,
 	'author': False,
 	'default': 'GENERAL',
-	'zip': False,
 	
 	'multi': None,
 	'hide': None,
@@ -86,9 +83,9 @@ def main(argv=None):
 	try:
 		try:
 			opts, args = getopt.getopt(argv[1:], 
-				"hr:tywcao:d:zmxfvq", 
+				"hr:tywcao:d:mxfvq", 
 				[ "help", "revision=", "today", "yesterday", "week", "category", "author",
-					"output=", "default=", "zip", "multi", "xxx", "fun", "verbose", "quiet" ])
+					"output=", "default=", "multi", "xxx", "fun", "verbose", "quiet" ])
 		except getopt.error, msg:
 			raise Usage(msg)
 		
@@ -106,7 +103,7 @@ def main(argv=None):
 			if option in ("-y", "--yesterday"):
 				options['revision'] = '{"' + yesterday.isoformat() + 'T00:00Z"}:{"' + yesterday.isoformat() + 'T23:59Z"}'
 			if option in ("-w", "--week"):
-				options['revision'] = '{"' + lastweek.isoformat() + 'T00:00Z"}:{"' + today.isoformat() + 'T23:59Z"}'
+				options['revision'] = '{"' + lastweek.isoformat() + 'T00:00Z"}:{"' + yesterday.isoformat() + 'T23:59Z"}'
 			
 			if option in ("-c", "--category"):
 				options['category'] = True
@@ -118,8 +115,6 @@ def main(argv=None):
 			
 			if option in ("-d", "--default"):
 				options['default'] = value
-			if option in ("-z", "--zip"):
-				options['zip'] = True
 			
 			if option in ("-m", "--multi"):
 				options['multi'] = True
@@ -149,11 +144,11 @@ def main(argv=None):
 		header( options['path'], options['revision'], options['output'] )
 		
 		if options['category']:
-			by_category( logs, options['output'], options['zip'] )
+			by_category( logs, options['output'] )
 		elif options['author']:
-			by_author( logs, options['output'], options['zip'] )
+			by_author( logs, options['output'] )
 		else:
-			by_date( logs, options['output'], options['zip'] )
+			by_date( logs, options['output'] )
 		
 		footer( options['path'], options['revision'], options['output'] )
 		
@@ -224,9 +219,9 @@ def hide( logs, hide=None ):
 	
 	return logs
 
-def by_category( logs, output='text', zip=False ):
+def by_category( logs, output='text' ):
 	
-	logs_grouped = grouped( logs, 'category', zip )
+	logs_grouped = grouped( logs, 'category' )
 	groups = logs_grouped.keys()
 	groups.sort(compare)
 	
@@ -240,12 +235,13 @@ def by_category( logs, output='text', zip=False ):
 	
 		print msg % entries
 
-def by_date( logs, output='text', zip=False ):
+def by_date( logs, output='text' ):
 	
-	logs_grouped = grouped( logs, 'date', zip )
+	logs_grouped = grouped( logs, 'date' )
 	groups = logs_grouped.keys()
 	groups.sort(compare)
 	groups.reverse()
+	groups.pop()
 	
 	for g in groups:
 		
@@ -258,9 +254,9 @@ def by_date( logs, output='text', zip=False ):
 		
 		print msg % entries
 
-def by_author( logs, output='text', zip=False ):
+def by_author( logs, output='text' ):
 	
-	logs_grouped = grouped( logs, 'author', zip )
+	logs_grouped = grouped( logs, 'author' )
 	groups = logs_grouped.keys()
 	groups.sort(compare)
 	
@@ -312,7 +308,7 @@ def category( msg, output='text' ):
 	
 	return txt
 
-def grouped( logs, key='date', zip=False ):
+def grouped( logs, key='date' ):
 	
 	groups = {}
 	for entry in logs:
@@ -323,21 +319,7 @@ def grouped( logs, key='date', zip=False ):
 		
 		groups[g].append( entry )
 	
-	gr = groups.keys()
-	gr.sort(compare)
-	
-	if zip:
-		
-		if len( gr ):
-			gr.pop(0)
-		if len( gr ):
-			gr.pop()
-		
-	groupings = {}
-	for g in gr:
-		groupings[g] = groups[g]
-	
-	return groupings
+	return groups
 
 if __name__ == "__main__":
 	sys.exit(main())
