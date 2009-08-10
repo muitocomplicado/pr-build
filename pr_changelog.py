@@ -303,7 +303,7 @@ def category( msg, output='text' ):
 		txt += '<title>Changelog - %s</title>\n' % msg
 		txt += '<description><![CDATA[%s]]></description>\n'
 		txt += '<pubDate>%s %s</pubDate>\n' % ( msg, '23:59:59 GMT' )
-		txt += '<guid isPermalink="false">%s</guid>\n' % msg
+		txt += '<guid isPermalink="false">%s - %s</guid>\n' % ( options['path'], msg )
 		txt += '</item>\n'
 	
 	return txt
