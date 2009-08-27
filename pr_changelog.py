@@ -41,6 +41,7 @@ Other options:
 	-o --output      set the output format (default text)
 	                 other: bbcode, rss, test
 	
+	-n --name        name of changelog (default empty)
 	-d --default     set the default category (GENERAL)
 	-m --multi       group multiline entries
 	-x --xxx         hide all comments with xxxx
@@ -58,6 +59,7 @@ options = {
 	'category': False,
 	'author': False,
 	'default': 'GENERAL',
+	'name': '',
 	
 	'multi': None,
 	'hide': None,
@@ -83,9 +85,9 @@ def main(argv=None):
 	try:
 		try:
 			opts, args = getopt.getopt(argv[1:], 
-				"hr:tywcao:d:mxfvq", 
+				"hr:tywcao:n:d:mxfvq", 
 				[ "help", "revision=", "today", "yesterday", "week", "category", "author",
-					"output=", "default=", "multi", "xxx", "fun", "verbose", "quiet" ])
+					"output=", "name=", "default=", "multi", "xxx", "fun", "verbose", "quiet" ])
 		except getopt.error, msg:
 			raise Usage(msg)
 		
@@ -113,6 +115,8 @@ def main(argv=None):
 			if option in ("-o", "--output"):
 				options['output'] = value
 			
+			if option in ("-n", "--name"):
+				options['name'] = ' - %s' % value
 			if option in ("-d", "--default"):
 				options['default'] = value
 			
@@ -164,7 +168,7 @@ def header( path, revision, output='text' ):
 		print '<?xml version="1.0"?>'
 		print '<rss version="2.0">'
 		print '<channel>'
-		print '<title>Project Reality Mod Changelog</title>'
+		print '<title>Project Reality Mod Changelog%s</title>' % options['name']
 		print '<link>http://realitymod.com</link>'
 		print '<description>Latest changelog information.</description>'
 		print '<language>en-us</language>'
@@ -300,7 +304,7 @@ def category( msg, output='text' ):
 	if output == 'rss':
 		
 		txt  = '<item>\n'
-		txt += '<title>Changelog - %s</title>\n' % msg
+		txt += '<title>Changelog - %s%s</title>\n' % ( msg, options['name'] )
 		txt += '<description><![CDATA[%s]]></description>\n'
 		txt += '<pubDate>%s %s</pubDate>\n' % ( msg, '23:59:59 GMT' )
 		txt += '<guid isPermalink="false">%s - %s</guid>\n' % ( options['path'], msg )
