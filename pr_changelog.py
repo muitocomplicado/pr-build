@@ -35,8 +35,8 @@ Examples:
 
 Other options:
 	
-	-c --category    group by category
-	-a --author      group by author
+	-g --group       set the entries grouping (default date)
+	                 other: category, author, none
 	
 	-o --output      set the output format (default text)
 	                 other: bbcode, rss, test
@@ -56,8 +56,7 @@ options = {
 	'revision': None,
 	'output': 'text',
 	
-	'category': False,
-	'author': False,
+	'group': 'date',
 	'default': 'GENERAL',
 	'name': '',
 	
@@ -85,8 +84,8 @@ def main(argv=None):
 	try:
 		try:
 			opts, args = getopt.getopt(argv[1:], 
-				"hr:tywcao:n:d:mxfvq", 
-				[ "help", "revision=", "today", "yesterday", "week", "category", "author",
+				"hr:tywg:o:n:d:mxfvq", 
+				[ "help", "revision=", "today", "yesterday", "week", "group=",
 					"output=", "name=", "default=", "multi", "xxx", "fun", "verbose", "quiet" ])
 		except getopt.error, msg:
 			raise Usage(msg)
@@ -107,10 +106,8 @@ def main(argv=None):
 			if option in ("-w", "--week"):
 				options['revision'] = '{"' + lastweek.isoformat() + 'T00:00Z"}:{"' + yesterday.isoformat() + 'T23:59Z"}'
 			
-			if option in ("-c", "--category"):
-				options['category'] = True
-			if option in ("-a", "--author"):
-				options['author'] = True
+			if option in ("-g", "--group") and value in ['date','category','author','none']:
+				options['group'] = value
 			
 			if option in ("-o", "--output"):
 				options['output'] = value
@@ -147,9 +144,11 @@ def main(argv=None):
 		
 		header( options['path'], options['revision'], options['output'] )
 		
-		if options['category']:
+		if options['group'] == 'none':
+			by_none( logs, options['output'] )
+		elif options['group'] == 'category':
 			by_category( logs, options['output'] )
-		elif options['author']:
+		elif options['group'] == 'author':
 			by_author( logs, options['output'] )
 		else:
 			by_date( logs, options['output'] )
@@ -222,6 +221,14 @@ def hide( logs, hide=None ):
 		logs[key] = entry
 	
 	return logs
+
+def by_none( logs, output='text' ):
+	
+	entries = ''
+	for entry in logs:
+		entries += message( entry, output )
+	
+	print entries
 
 def by_category( logs, output='text' ):
 	
