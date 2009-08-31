@@ -583,7 +583,7 @@ def clean_python( path ):
 	delete( path, 'debug', True )
 	
 	game = os.path.join( path, 'game' )
-	delete( game, '*.py', True, [ '__init__.py', 'gpm_*.py', 'realityconfig_common.py', 'realityconfig_local.py', 'realityconfig_private.py' ] )
+	delete( game, '*.py', True, [ '__init__.py', 'gpm_*.py', 'realityconfig_common.py', 'realityconfig_local.py', 'realityconfig_private.py', 'realityconfig_coop.py' ] )
 	delete( game, 'gpm_*.pyc', True )
 	delete( game, 'realityconfig_*.pyc', True, [ 'realityconfig_public.pyc' ] )
 	delete( game, '__init__.pyc', True )
