@@ -41,13 +41,16 @@ Examples:
 Other options:
 
 	-k --skip         skip to the last patch (must have all other builds ready)
-	-p --paused       pauses after each major subversion command
+	-w --wait         pauses after each major subversion command
 
 	-y --python       do not compile python
 	-i --installer    do not create installers
 	-u --update       do not update the repo
 	-e --export       do not export the repo
 	-a --archive      do not compile archives
+
+	-p --paths        core and levels repo subpaths (comma separated)
+	                  defaults: trunk, levels
 
 	-v --verbose      run it verbosely
 	-q --quiet        run it quietly
@@ -124,7 +127,9 @@ options = {
 	'server': False,
 	'test': False,
 	'skip': False,
-	'paused': False,
+	'wait': False,
+	
+	'paths': [ 'trunk', 'levels' ],
 	
 	'python': True,
 	'installer': True,
@@ -150,9 +155,9 @@ def main(argv=None):
 	try:
 		try:
 			opts, args = getopt.getopt(argv[1:], 
-				"hc:l:n:bstkpyiueavq", 
-				[ "help", "core=", "levels=", "number=", "build", "server", "test", "skip", "paused", 
-					"python", "installer", "update", "export", "archive", "verbose", "quiet" ])
+				"hc:l:n:bstkwpyiueavq", 
+				[ "help", "core=", "levels=", "number=", "build", "server", "test", "skip", "wait", 
+					"paths=", "python", "installer", "update", "export", "archive", "verbose", "quiet" ])
 		except getopt.error, msg:
 			raise Usage(msg)
 		
@@ -176,8 +181,14 @@ def main(argv=None):
 				options['test'] = True
 			if option in ("-k", "--skip"):
 				options['skip'] = True
-			if option in ("-p", "--paused"):
-				options['paused'] = True
+			if option in ("-w", "--wait"):
+				options['wait'] = True
+			
+			if option in ("-p", "--paths") and value.find(',') != -1:
+				paths = value.split(',')
+				paths[0] = '/' + paths[0].trim('/') + '/'
+				paths[1] = '/' + paths[1].trim('/') + '/'
+				options['paths'] = paths
 			
 			if option in ("-y", "--python"):
 				options['python'] = False
@@ -305,12 +316,12 @@ def build_client( patch ):
 			
 			if core_lrevision < int( core_revision ):
 				core_log   = log_repo( core_path, core_lrevision, core_revision )
-				for path in paths_repo( core_log, patch, '/trunk/' ):
+				for path in paths_repo( core_log, patch, options['paths'][0] ):
 					copy( os.path.join( core_path, path ), os.path.join( cb, path ) )
 			
 			if levels_lrevision < int( levels_revision ):
 				levels_log = log_repo( levels_path, levels_lrevision, levels_revision )
-				for path in paths_repo( levels_log, patch, '/levels/' ):
+				for path in paths_repo( levels_log, patch, options['paths'][1] ):
 					copy( os.path.join( levels_path, path), os.path.join( lb, path ) )
 		
 	if options['cleanup']:
@@ -485,7 +496,7 @@ def update_repo( path, revision ):
 	
 	verbose( 'Updating %s to revision %s' % ( path, revision ), False )
 	pr_svn.update( path, revision, options['quiet'] )
-	pause()
+	wait()
 
 def export_repo( path, destination ):
 	
@@ -502,7 +513,7 @@ def log_repo( path, start, end ):
 	verbose( 'Log %s revision %s' % ( path, revision ), False )
 	
 	logs = pr_svn.log( path, revision, True, True )
-	pause()
+	wait()
 	
 	return logs
 
@@ -806,8 +817,8 @@ def merge( source, destination ):
 	else:
 		os.system( 'xcopy "%s" "%s" /E /Q /I /Y' % ( source, destination ) )
 
-def pause():
-	if options['paused']:
+def wait():
+	if options['wait']:
 		os.system('pause')
 
 
