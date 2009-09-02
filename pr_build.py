@@ -155,7 +155,7 @@ def main(argv=None):
 	try:
 		try:
 			opts, args = getopt.getopt(argv[1:], 
-				"hc:l:n:bstkwpyiueavq", 
+				"hc:l:n:bstkwp:yiueavq", 
 				[ "help", "core=", "levels=", "number=", "build", "server", "test", "skip", "wait", 
 					"paths=", "python", "installer", "update", "export", "archive", "verbose", "quiet" ])
 		except getopt.error, msg:
@@ -186,8 +186,8 @@ def main(argv=None):
 			
 			if option in ("-p", "--paths") and value.find(',') != -1:
 				paths = value.split(',')
-				paths[0] = '/' + paths[0].trim('/') + '/'
-				paths[1] = '/' + paths[1].trim('/') + '/'
+				paths[0] = '/' + paths[0].strip('/') + '/'
+				paths[1] = '/' + paths[1].strip('/') + '/'
 				options['paths'] = paths
 			
 			if option in ("-y", "--python"):
