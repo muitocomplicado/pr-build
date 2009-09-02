@@ -49,7 +49,7 @@ Other options:
 	-e --export       do not export the repo
 	-a --archive      do not compile archives
 
-	-p --paths        core and levels repo subpaths (comma separated)
+	-p --paths        core and levels repo subpaths additions to defaults (comma separated)
 	                  defaults: trunk, levels
 
 	-v --verbose      run it verbosely
@@ -184,11 +184,10 @@ def main(argv=None):
 			if option in ("-w", "--wait"):
 				options['wait'] = True
 			
-			if option in ("-p", "--paths") and value.find(',') != -1:
+			if option in ("-p", "--paths"):
 				paths = value.split(',')
-				paths[0] = '/' + paths[0].strip('/') + '/'
-				paths[1] = '/' + paths[1].strip('/') + '/'
-				options['paths'] = paths
+				for p in paths:
+					options['paths'].append( p.strip('/') )
 			
 			if option in ("-y", "--python"):
 				options['python'] = False
@@ -316,13 +315,13 @@ def build_client( patch ):
 			
 			if core_lrevision < int( core_revision ):
 				core_log   = log_repo( core_path, core_lrevision, core_revision )
-				for path in paths_repo( core_log, patch, options['paths'][0] ):
+				for path in paths_repo( core_log, patch, options['paths'] ):
 					copy( os.path.join( core_path, path ), os.path.join( cb, path ) )
 			
 			if levels_lrevision < int( levels_revision ):
 				levels_log = log_repo( levels_path, levels_lrevision, levels_revision )
-				for path in paths_repo( levels_log, patch, options['paths'][1] ):
-					copy( os.path.join( levels_path, path), os.path.join( lb, path ) )
+				for path in paths_repo( levels_log, patch, options['paths'] ):
+					copy( os.path.join( levels_path, path ), os.path.join( lb, path ) )
 		
 	if options['cleanup']:
 		verbose( 'CLEANUP %s' % patch )
@@ -517,7 +516,7 @@ def log_repo( path, start, end ):
 	
 	return logs
 
-def paths_repo( log, patch, remove='/trunk/' ):
+def paths_repo( log, patch, remove=['trunk'] ):
 	return pr_svn.get_paths( log, remove )
 
 def empty_archives( path, revision ):

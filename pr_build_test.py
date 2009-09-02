@@ -22,9 +22,9 @@ def export_repo( path, destination ):
 def log_repo( path, start, end ):
 	pass
 
-def paths_repo( file, patch, remove='/trunk/' ):
+def paths_repo( file, patch, remove=['trunk'] ):
 	
-	if remove == '/trunk/':
+	if remove == ['trunk']:
 		if patch == 1:
 			return [ 
 				'menu/menu_client-zip/super.con',
@@ -36,7 +36,7 @@ def paths_repo( file, patch, remove='/trunk/' ):
 				'objects/objects_server-zip/vehicles/vehicles.tweak',
 				'objects/objects_server-zip/weapons/weapons.tweak'
 			]
-	if remove == '/levels/':
+	if remove == ['levels']:
 		if patch == 1:
 			return [ 
 				'archer/objects_server.zip'

@@ -53,7 +53,7 @@ def export( path, destination, quiet=True ):
 	
 	return os.system( cmd )
 
-def get_paths( logs, remove='/trunk/' ):
+def get_paths( logs, remove=['trunk'] ):
 	
 	paths = []
 	
@@ -61,10 +61,18 @@ def get_paths( logs, remove='/trunk/' ):
 		for p in entry['paths']:
 			
 			action = p[0]
-			path   = p[1]
+			path   = p[1].strip('/')
 			
 			if remove:
-				path = path.replace( remove, '' )
+				for r in remove:
+					r = r.strip('/')
+					if path.startswith( r ):
+						path = path.replace( r, '' )
+			
+			path = path.strip('/')
+			
+			if path == '' or path == '/':
+				continue
 			
 			if os.sep != '/':
 				path = path.replace( '/',os.sep )
