@@ -35,13 +35,16 @@ Requires Python 2.3+
 	Other options:
 
 		-k --skip         skip to the last patch (must have all other builds ready)
-		-p --paused       pauses after each major subversion command
+		-w --wait         pauses after each major subversion command
 
+		-y --python       do not compile python
+		-i --installer    do not create installers
 		-u --update       do not update the repo
 		-e --export       do not export the repo
 		-a --archive      do not compile archives
-		-y --python       do not compile python
-		-i --installer    do not create installers
+
+		-p --paths        core and levels repo subpaths additions to defaults (comma separated)
+		                  defaults: trunk, levels
 
 		-v --verbose      run it verbosely
 		-q --quiet        run it quietly
@@ -73,7 +76,7 @@ The results will be in the `builds_test` folder.
 		-r --revision    revision range
 		-t --today       current day of changes
 		-y --yesterday   previous day of changes
-		-w --week        last week of changes (but not today)
+		-w --week        last week of changes (doesn't include current day)
 
 	Examples:
 
@@ -85,14 +88,14 @@ The results will be in the `builds_test` folder.
 
 	Other options:
 	
-		-c --category    group by category
-		-a --author      group by author
+		-g --group       set the entries grouping (default date)
+		                 other: category, author, none
 	
 		-o --output      set the output format (default text)
 		                 other: bbcode, rss, test
 	
+		-n --name        name of changelog (default empty)
 		-d --default     set the default category (GENERAL)
-	
 		-m --multi       group multiline entries
 		-x --xxx         hide all comments with xxxx
 		-f --fun         hide all comments except first and last letter of each word
