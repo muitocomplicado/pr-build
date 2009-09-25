@@ -22,7 +22,7 @@ def export_repo( path, destination ):
 def log_repo( path, start, end ):
 	pass
 
-def paths_repo( file, patch, remove=['trunk'] ):
+def paths_repo( log, patch, remove=['trunk'] ):
 	
 	if remove == ['trunk']:
 		if patch == 1:
@@ -56,6 +56,8 @@ pr_build.update_repo = update_repo
 pr_build.export_repo = export_repo
 pr_build.log_repo    = log_repo
 pr_build.paths_repo  = paths_repo
+
+pr_build.root_path = os.path.dirname(__file__)
 
 pr_build.core_path      = os.path.join( pr_build.root_path, 'test', 'core' )
 pr_build.levels_path    = os.path.join( pr_build.root_path, 'test', 'levels' )
