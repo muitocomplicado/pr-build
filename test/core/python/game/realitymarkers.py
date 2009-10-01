@@ -1,2 +1,0 @@
-# Project Reality Markers Logic
-# 

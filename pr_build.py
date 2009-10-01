@@ -42,6 +42,7 @@ Other options:
 
 	-k --skip         skip to the last patch (must have all other builds ready)
 	-w --wait         pauses after each major subversion command
+	-z --zip          zip structure (default v1)
 
 	-y --python       do not compile python
 	-i --installer    do not create installers
@@ -71,31 +72,49 @@ patch_build    = os.path.join( builds_path, 'patch' )
 core_build_patch   = os.path.join( builds_path, 'core_patch' )
 levels_build_patch = os.path.join( builds_path, 'levels_patch' )
 
-exec_7zip  = os.path.abspath( os.path.join( core_path, 'readme', 'assets', '7za.exe' ) )
+exec_7zip  = 'C:\\repos\\core\\readme\\assets\\7za.exe'
 exec_inno  = 'C:\\Program Files (x86)\\Inno Setup 5\\Compil32.exe'
 
-installer_path = os.path.join( core_path, 'readme', 'assets', 'builds', 'installer' )
+installer_path        = os.path.join( core_path, 'readme', 'assets', 'builds', 'installer' )
 core_installer_path   = os.path.join( installer_path, 'pr_core_base.iss' )
 levels_installer_path = os.path.join( installer_path, 'pr_levels_base.iss' )
 patch_installer_path  = os.path.join( installer_path, 'pr_patch_base.iss' )
 
 filter_archives = {
-	'objects/objects_client': ['*.con', '*.tweak', '*.collisionmesh']
-}
-
-old_archives = {
-	8066: {
-		'objects/objects_client': [ 
-			'Vehicles/Air/ch_the_z9', 
-			'Vehicles/Air/gb_the_chinook',
-			'Vehicles/Land/cf_jep_nyala',
-			'Vehicles/Land/ch_jeep_vn3',
-			'Vehicles/Land/gb_apc_scimitar',
-			'Weapons/Handheld/GBLMG_M249MINIMI'
-		]
+	'v1': {
+		'objects/objects_client': ['*.con', '*.tweak', '*.collisionmesh']
+	},
+	'v2': {
+		'objects/common_client': ['*.con', '*.tweak', '*.collisionmesh'],
+		'objects/dynamicobjects_client': ['*.con', '*.tweak', '*.collisionmesh'],
+		'objects/effects_client': ['*.con', '*.tweak', '*.collisionmesh'],
+		'objects/kits_client': ['*.con', '*.tweak', '*.collisionmesh'],
+		'objects/miscobjects_client': ['*.con', '*.tweak', '*.collisionmesh'],
+		'objects/roads_client': ['*.con', '*.tweak', '*.collisionmesh'],
+		'objects/soldiers_client': ['*.con', '*.tweak', '*.collisionmesh'],
+		'objects/staticobjects_client': ['*.con', '*.tweak', '*.collisionmesh'],
+		'objects/vegitation_client': ['*.con', '*.tweak', '*.collisionmesh'],
+		'objects/vehicles_client': ['*.con', '*.tweak', '*.collisionmesh'],
+		'objects/water_client': ['*.con', '*.tweak', '*.collisionmesh'],
+		'objects/weapons_client': ['*.con', '*.tweak', '*.collisionmesh']
 	}
 }
 
+old_archives = {
+	'v1': {
+		8066: {
+			'objects/objects_client': [ 
+				'Vehicles/Air/ch_the_z9', 
+				'Vehicles/Air/gb_the_chinook',
+				'Vehicles/Land/cf_jep_nyala',
+				'Vehicles/Land/ch_jeep_vn3',
+				'Vehicles/Land/gb_apc_scimitar',
+				'Weapons/Handheld/GBLMG_M249MINIMI'
+			]
+		}
+	},
+	'v2': {}
+}
 
 archives_con = {
 	'client': 'clientarchives.con',
@@ -103,17 +122,54 @@ archives_con = {
 }
 
 core_archives = {
-	'client': {
-		'common_client': 'Common', 
-		'menu/fonts_client': 'Fonts', 
-		'menu/menu_client': 'Menu',
-		'objects/objects_client': 'Objects',
-		'shaders_client': 'Shaders'
+	'v1': {
+		'client': {
+			'common_client': ( 'Common', False ),
+			'menu/fonts_client': ( 'Fonts', False ),
+			'menu/menu_client': ( 'Menu', False ),
+			'shaders_client': ( 'Shaders', False ),
+			'objects/objects_client': ( 'Objects', False )
+		},
+		'server': { 
+			'common_server': ( 'Common', False ),
+			'menu/menu_server': ( 'Menu', False ), 
+			'objects/objects_server': ( 'Objects', False )
+		}
 	},
-	'server': { 
-		'common_server': 'Common',
-		'menu/menu_server': 'Menu', 
-		'objects/objects_server': 'Objects',
+	'v2': {
+		'client': {
+			'common_client': ( 'Common', False ),
+			'menu/fonts_client': ( 'Fonts', False ),
+			'menu/menu_client': ( 'Menu', False ),
+			'shaders_client': ( 'Shaders', False ),
+			'objects/common_client': ( 'Objects', True ),
+			'objects/dynamicobjects_client': ( 'Objects', True ),
+			'objects/effects_client': ( 'Objects', True ),
+			'objects/kits_client': ( 'Objects', True ),
+			'objects/miscobjects_client': ( 'Objects', True ),
+			'objects/roads_client': ( 'Objects', True ),
+			'objects/soldiers_client': ( 'Objects', True ),
+			'objects/staticobjects_client': ( 'Objects', True ),
+			'objects/vegitation_client': ( 'Objects', True ),
+			'objects/vehicles_client': ( 'Objects', True ),
+			'objects/water_client': ( 'Objects', True ),
+			'objects/weapons_client': ( 'Objects', True )
+		},
+		'server': { 
+			'common_server': ( 'Common', False ),
+			'menu/menu_server': ( 'Menu', False ), 
+			'objects/common_server': ( 'Objects', True ),
+			'objects/effects_server': ( 'Objects', True ),
+			'objects/kits_server': ( 'Objects', True ),
+			'objects/miscobjects_server': ( 'Objects', True ),
+			'objects/roads_server': ( 'Objects', True ),
+			'objects/soldiers_server': ( 'Objects', True ),
+			'objects/staticobjects_server': ( 'Objects', True ),
+			'objects/vegitation_server': ( 'Objects', True ),
+			'objects/vehicles_server': ( 'Objects', True ),
+			'objects/water_server': ( 'Objects', True ),
+			'objects/weapons_server': ( 'Objects', True )
+		}
 	}
 }
 
@@ -128,7 +184,7 @@ options = {
 	'test': False,
 	'skip': False,
 	'wait': False,
-	
+	'zip': 'v1',
 	'paths': [ 'trunk', 'levels' ],
 	
 	'python': True,
@@ -155,9 +211,9 @@ def main(argv=None):
 	try:
 		try:
 			opts, args = getopt.getopt(argv[1:], 
-				"hc:l:n:bstkwp:yiueavq", 
+				"hc:l:n:bstkwp:z:yiueavq", 
 				[ "help", "core=", "levels=", "number=", "build", "server", "test", "skip", "wait", 
-					"paths=", "python", "installer", "update", "export", "archive", "verbose", "quiet" ])
+					"paths=", "zip=", "python", "installer", "update", "export", "archive", "verbose", "quiet" ])
 		except getopt.error, msg:
 			raise Usage(msg)
 		
@@ -183,7 +239,8 @@ def main(argv=None):
 				options['skip'] = True
 			if option in ("-w", "--wait"):
 				options['wait'] = True
-			
+			if option in ("-z", "--zip") and value in core_archives:
+				options['zip'] = value
 			if option in ("-p", "--paths"):
 				paths = value.split(',')
 				for p in paths:
@@ -275,7 +332,6 @@ def main(argv=None):
 		# print >> sys.stderr, "\t for help use --help"
 		return 2
 
-
 def build_client( patch ):
 	
 	verbose( 'CLIENT BUILD %s' % patch )
@@ -331,22 +387,22 @@ def build_client( patch ):
 		delete( cb, 'bst*.md5' )
 		delete( lb, 'assets', True )
 		delete( lb, 'server', True )
-		clean_archives( cb, core_archives['server'] )
-		clean_archives( cb, core_archives['client'] )
+		clean_archives( cb, core_archives[options['zip']]['server'] )
+		clean_archives( cb, core_archives[options['zip']]['client'] )
 		empty_archives( cb, core_revision )
 		
 	
 	if options['archive']:
 		verbose( 'ARCHIVE %s' % patch )
 		
-		build_archives( cb, core_archives['server'], sufix )
-		build_archives( cb, core_archives['client'], sufix )
+		build_archives( cb, core_archives[options['zip']]['server'], sufix )
+		build_archives( cb, core_archives[options['zip']]['client'], sufix )
 		copy( os.path.join( cb, 'shaders_client%s.zip' % sufix ), 
 					os.path.join( cb, 'shaders_client_pr%s.zip' % sufix ) )
 		copy( os.path.join( cb, 'shaders_client%s.zip' % sufix ), 
 					os.path.join( cb, 'shaders_night_client%s.zip' % sufix ) )
-		delete_archives( cb, core_archives['server'] )
-		delete_archives( cb, core_archives['client'] )
+		delete_archives( cb, core_archives[options['zip']]['server'] )
+		delete_archives( cb, core_archives[options['zip']]['client'] )
 		update_archives( patch )
 	
 	
@@ -390,7 +446,7 @@ def build_server( patch ):
 	delete( os.path.join( server_build, 'levels' ), '*client.zip', True )
 	delete( os.path.join( server_build, 'levels' ), '*.png', True )
 
-	for p,o in core_archives['client'].iteritems():
+	for p,o in core_archives[options['zip']]['client'].iteritems():
 		delete( os.path.join( server_build, '%s.zip' % p.replace('/',os.sep) ) )
 		for i in range( 1, patch+1 ):
 			delete( os.path.join( server_build, '%s_patch%s.zip' % ( p.replace('/',os.sep), i ) ) )
@@ -431,7 +487,7 @@ def server_installer( number, test ):
 	
 	rename( server_build, server_build_renamed )
 	delete( filename )
-	zip( server_build_renamed, filename, '', True )
+	zip( server_build_renamed, filename, True )
 	rename( server_build_renamed, server_build )
 
 def core_installer( number, test ):
@@ -521,7 +577,7 @@ def paths_repo( log, patch, remove=['trunk'] ):
 
 def empty_archives( path, revision ):
 	
-	for rev,paths in old_archives.iteritems():
+	for rev,paths in old_archives[options['zip']].iteritems():
 		if revision > rev:
 			continue
 		for p,dirs in paths.iteritems():
@@ -551,8 +607,8 @@ def clean_archives( path, archives ):
 		delete( dir, 'samples.tga', True )
 		delete( dir, 'uvs.tga', True )
 		
-		if p in filter_archives:
-			for f in filter_archives[p]:
+		if p in filter_archives[options['zip']]:
+			for f in filter_archives[options['zip']][p]:
 				delete( dir, f, True )
 		
 		verbose( 'Deleting empty folders from %s' % ( dir ), False )
@@ -572,12 +628,26 @@ def build_archives( path, archives, sufix='' ):
 		if not os.path.exists( dir ):
 			continue
 		
-		verbose( 'Building archive %s from %s' % ( file, dir ), False )
+		if o[1]:
+			ren = dir.replace( '_client-zip', '' )
+			ren = ren.replace( '_server-zip', '' )
+			folder = True
+		else:
+			ren = dir
+			folder = False
+		
+		if o[1]:
+			rename( dir, ren )
+		
+		verbose( 'Building archive %s from %s' % ( file, ren ), False )
 		
 		if os.path.exists( file ):
 			delete( file )
 		
-		zip( dir, file )
+		zip( ren, file, folder )
+		
+		if o[1]:
+			rename( ren, dir )
 
 def compile_python( path ):
 	
@@ -635,13 +705,13 @@ def update_archives( patch ):
 				continue
 			
 			patch_content = ''
-			for p,o in core_archives[type].iteritems():
+			for p,o in core_archives[options['zip']][type].iteritems():
 				
 				ps = os.path.join( path_core_build( i ), p.replace('/',os.sep) )
 				
 				if os.path.exists( '%s_patch%s.zip' % ( ps, i ) ):
 					verbose( 'Updating %s to mount %s_patch%s.zip' % ( filecon, p, i ), False )
-					patch_content += 'fileManager.mountArchive %s_patch%s.zip %s\n' % ( p, i, o )
+					patch_content += 'fileManager.mountArchive %s_patch%s.zip %s\n' % ( p, i, o[0] )
 			
 			if archive_content.find( patch_replacer ) != -1:
 				archive_content = archive_content.replace( patch_replacer, patch_replacer + '\n' + patch_content )
@@ -668,6 +738,7 @@ def rename( source, destination ):
 		
 	verbose( 'Renaming %s to %s' % ( source, destination ), False )
 	os.rename( source, destination )
+	delay()
 	# os.system( 'ren %s %s' % ( source, destination ) )
 
 def paths( path, pattern='*', recursive=False, exclude=[] ):
@@ -746,7 +817,7 @@ def delete( path, pattern=None, recursive=False, exclude=[] ):
 			os.remove(path)
 			# os.system( 'del /F %s %s %s' % ( q, r, path ) )
 		
-def zip( source, destination, filters='', folder=False ):
+def zip( source, destination, folder=False, filters='' ):
 	
 	if not os.path.exists( source ):
 		return
@@ -820,6 +891,8 @@ def wait():
 	if options['wait']:
 		os.system('pause')
 
+def delay():
+	sleep(10)
 
 if __name__ == "__main__":
 	sys.exit(main())

@@ -1,2 +1,0 @@
-# Project Reality Core Logic
-# 
