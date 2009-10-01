@@ -3,3 +3,7 @@ builds_test
 test/installer/pr_core.iss
 test/installer/pr_levels.iss
 test/installer/pr_patch.iss
+logs
+twitter
+*.txt
+*.sh
