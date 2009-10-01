@@ -36,6 +36,7 @@ Requires Python 2.3+
 
 		-k --skip         skip to the last patch (must have all other builds ready)
 		-w --wait         pauses after each major subversion command
+		-z --zip          zip structure (default v1)
 
 		-y --python       do not compile python
 		-i --installer    do not create installers
@@ -60,9 +61,9 @@ Requires Python 2.3+
 
 You can run a test with the dummy data in the `test` folder by running `pr_build_test.py` with the following command:
 
-	python pr_build_test.py -c 0,1,2 -l 0,1,2 -n 0123 -b -s -t -v
+	python pr_build_test.py -c 0,1,2 -l 0,1,2 -n 0123 -b -s -t -v -z v2
 
-The results will be in the `builds_test` folder.
+The results will be in the `test_builds` folder.
 
 
 ## pr_changelog.py
