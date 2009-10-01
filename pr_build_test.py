@@ -26,11 +26,6 @@ def log_repo( path, start, end ):
 
 def paths_repo( log, patch, remove=['trunk'] ):
 	
-	print '--------------- PATHS REPO --------------'
-	print os.path.abspath( log )
-	print os.path.abspath( pr_build.core_path )
-	print os.path.abspath( pr_build.levels_path )
-	
 	if os.path.abspath( log ) == os.path.abspath( pr_build.core_path ):
 		if patch == 1:
 			return [ 
