@@ -14,19 +14,24 @@ def update_repo( path, revision ):
 	
 	if revision > 0:
 		if path == pr_build.core_path:
-			pr_build.copy( os.path.join( pr_build.root_path, 'test', pr_build.options['zip'], 'core_patch%s' % revision ), path )
+			pr_build.copy( os.path.join( repo_path, 'core_patch%s' % revision ), path )
 		if path == pr_build.levels_path:
-			pr_build.copy( os.path.join( pr_build.root_path, 'test', pr_build.options['zip'], 'levels_patch%s' % revision ), path )
+			pr_build.copy( os.path.join( repo_path, 'levels_patch%s' % revision ), path )
 
 def export_repo( path, destination ):
 	pr_build.copy( path, destination )
 
 def log_repo( path, start, end ):
-	pass
+	return path
 
 def paths_repo( log, patch, remove=['trunk'] ):
 	
-	if remove == ['trunk']:
+	print '--------------- PATHS REPO --------------'
+	print os.path.abspath( log )
+	print os.path.abspath( pr_build.core_path )
+	print os.path.abspath( pr_build.levels_path )
+	
+	if os.path.abspath( log ) == os.path.abspath( pr_build.core_path ):
 		if patch == 1:
 			return [ 
 				'menu/menu_client-zip/super.con',
@@ -47,7 +52,7 @@ def paths_repo( log, patch, remove=['trunk'] ):
 					'objects/weapons_server-zip/weapons.tweak'
 				]
 	
-	if remove == ['levels']:
+	if os.path.abspath( log ) == os.path.abspath( pr_build.levels_path ):
 		if patch == 1:
 			return [ 
 				'archer/objects_server.zip'
@@ -62,7 +67,7 @@ def paths_repo( log, patch, remove=['trunk'] ):
 	return []
 
 def delay():
-	sleep(3)
+	sleep(1)
 
 # Updating paths to use test data
 
@@ -78,12 +83,27 @@ if __name__ == "__main__":
 		pr_build.options['zip'] = 'v2'
 	
 	pr_build.root_path = os.path.dirname(__file__)
-
-	pr_build.core_path      = os.path.join( pr_build.root_path, 'test', pr_build.options['zip'], 'core' )
-	pr_build.levels_path    = os.path.join( pr_build.root_path, 'test', pr_build.options['zip'], 'levels' )
-	pr_build.installer_path = os.path.join( pr_build.root_path, 'test', pr_build.options['zip'], 'installer' )
-	pr_build.builds_path    = os.path.join( pr_build.root_path, 'builds_test' )
-
+	
+	repo_path = os.path.join( pr_build.root_path, 'test_repos' )
+	pr_build.delete( repo_path )
+	
+	if not os.path.exists( repo_path ):
+		os.makedirs( repo_path )
+	
+	pr_build.copy( os.path.join( pr_build.root_path, 'test', pr_build.options['zip'] ), os.path.abspath( repo_path ) )
+	
+	pr_build.builds_path = os.path.join( pr_build.root_path, 'test_builds' )
+	
+	if '-k' not in sys.argv and '--skip' not in sys.argv:
+		pr_build.delete( pr_build.builds_path )
+	
+	if not os.path.exists( pr_build.builds_path ):
+		os.makedirs( pr_build.builds_path )
+	
+	pr_build.core_path      = os.path.join( repo_path, 'core' )
+	pr_build.levels_path    = os.path.join( repo_path, 'levels' )
+	pr_build.installer_path = os.path.join( repo_path, 'installer' )
+	
 	pr_build.core_build     = os.path.join( pr_build.builds_path, 'core' )
 	pr_build.levels_build   = os.path.join( pr_build.builds_path, 'levels' )
 	pr_build.server_build   = os.path.join( pr_build.builds_path, 'server' )
