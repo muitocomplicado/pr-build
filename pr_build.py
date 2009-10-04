@@ -42,7 +42,7 @@ Other options:
 
 	-k --skip         skip to the last patch (must have all other builds ready)
 	-w --wait         pauses after each major subversion command
-	-z --zip          zip structure (default v1)
+	-z --zip          zip structure (default v2)
 
 	-y --python       do not compile python
 	-i --installer    do not create installers
@@ -184,7 +184,7 @@ options = {
 	'test': False,
 	'skip': False,
 	'wait': False,
-	'zip': 'v1',
+	'zip': 'v2',
 	'paths': [ 'trunk', 'levels' ],
 	
 	'python': True,

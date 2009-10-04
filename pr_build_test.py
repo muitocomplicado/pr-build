@@ -74,8 +74,8 @@ pr_build.delay       = delay
 
 if __name__ == "__main__":
 	
-	if 'v2' in sys.argv:
-		pr_build.options['zip'] = 'v2'
+	if 'v1' in sys.argv:
+		pr_build.options['zip'] = 'v1'
 	
 	pr_build.root_path = os.path.dirname(__file__)
 	
