@@ -25,7 +25,7 @@ Main options:
 
 	-c --core         revisions separated by commas (no spaces)
 	-l --levels       revisions separated by commas (no spaces)
-	-n --number       version number (e.g. 0856)
+	-n --number       version numbers separated by commas (no spaces) e.g. 0901,0902
 
 Build options:
 
@@ -35,7 +35,7 @@ Build options:
 
 Examples:
 
-	python pr_build.py --core 2334,2356 --levels 456,488 --number 0856 --build --server
+	python pr_build.py --core 2334,2356 --levels 456,488 --number 0856,0857 --build --server
 	python pr_build.py -c 2334 -l 456 -n 0856 --build --test
 
 Other options:
@@ -176,7 +176,7 @@ core_archives = {
 options = {
 	'core': None,
 	'levels': None,
-	'number': '',
+	'number': None,
 	'patch': None, # internal
 	
 	'build': False,
@@ -227,7 +227,7 @@ def main(argv=None):
 			if option in ("-l", "--levels"):
 				options['levels'] = value.split(',')
 			if option in ("-n", "--number"):
-				options['number'] = value
+				options['number'] = value.split(',')
 			
 			if option in ("-b", "--build"):
 				options['build'] = True
@@ -270,6 +270,8 @@ def main(argv=None):
 		
 		if len( options['core'] ) != len( options['levels'] ):
 			raise Usage('Number of revisions is different between core and levels')
+		if len( options['core'] ) != len( options['number'] ):
+			raise Usage('Number of revisions is different than the total of version numbers.')
 		
 		for r in ['core','levels']:
 			last_rev = 0
@@ -278,6 +280,13 @@ def main(argv=None):
 					raise Usage('%s revision %s is smaller than the previous revision %s' % ( r, rev, last_rev ) )
 				else:
 					last_rev = int( rev )
+		
+		for num in options['number']:
+			last_num = 0
+			if last_num > int( num ):
+				raise Usage('%s version number is smaller than the previous version number %s' % ( num, last_num ) )
+			else:
+				last_num = int( num )
 		
 		if options['build']:
 			
@@ -313,17 +322,23 @@ def main(argv=None):
 			build_server( options['patch'] )
 		
 		if options['installer']:
+			
 			if options['build']:
+				
 				if len( options['core'] ) == 1:
-					core_installer( options['number'], options['test'] )
-					levels_installer( options['number'], options['test'] )
+					core_installer( options['number'][-1], options['test'] )
+					levels_installer( options['number'][-1], options['test'] )
+				
 				else:
-					patch_installer( options['number'], options['test'] )
+					
+					patch_installer( options['number'][-1], options['number'][-2], options['test'] )
+					
 					if not options['skip']:
-						core_installer( options['number'], options['test'] )
-						levels_installer( options['number'], options['test'] )
+						core_installer( options['number'][-1], options['test'] )
+						levels_installer( options['number'][-1], options['test'] )
+			
 			if options['server']:
-				server_installer( options['number'], options['test'] )
+				server_installer( options['number'][-1], options['test'] )
 		
 		verbose( 'DONE', True )
 	
@@ -472,16 +487,16 @@ def build_server( patch ):
 	# rename( os.path.join( server_build, 'settings', 'prserverusersettings.con' ), os.path.join( server_build, 'settings', 'usersettings.con' ) )
 	# os.chmod( os.path.join( server_build, 'settings', 'usersettings.con' ), stat.S_IREAD )
 	
-def server_installer( number, test ):
+def server_installer( current, test ):
 	
-	verbose( 'SERVER INSTALLER %s TEST %s' % ( number, test ) )
+	verbose( 'SERVER INSTALLER %s TEST %s' % ( current, test ) )
 	
 	if test:
-		server_build_renamed = os.path.join( builds_path, 'pr_%s' % number )
+		server_build_renamed = os.path.join( builds_path, 'pr_%s' % current )
 	else:
 		server_build_renamed = os.path.join( builds_path, 'pr' )
 	
-	filename = os.path.join( builds_path, 'pr_%s_server.zip' % number )
+	filename = os.path.join( builds_path, 'pr_%s_server.zip' % current )
 	
 	delete( server_build_renamed )
 	
@@ -490,22 +505,22 @@ def server_installer( number, test ):
 	zip( server_build_renamed, filename, True )
 	rename( server_build_renamed, server_build )
 
-def core_installer( number, test ):
+def core_installer( current, test ):
 	
-	verbose( 'CORE INSTALLER %s TEST %s' % ( number, test ) )
-	client_installer( 'core', core_installer_path, number, test )
+	verbose( 'CORE INSTALLER %s TEST %s' % ( current, test ) )
+	client_installer( 'core', core_installer_path, current, None, test )
 	
-def levels_installer( number, test ):
+def levels_installer( current, test ):
 	
-	verbose( 'LEVELS INSTALLER %s TEST %s' % ( number, test ) )
-	client_installer( 'levels', levels_installer_path, number, test )
+	verbose( 'LEVELS INSTALLER %s TEST %s' % ( current, test ) )
+	client_installer( 'levels', levels_installer_path, current, None, test )
 
-def patch_installer( number, test ):
+def patch_installer( current, previous, test ):
 	
-	verbose( 'PATCH INSTALLER %s TEST %s' % ( number, test ) )
-	client_installer( 'patch', patch_installer_path, number, test )
+	verbose( 'PATCH INSTALLER %s - %s TEST %s' % ( previous, current, test ) )
+	client_installer( 'patch', patch_installer_path, current, previous, test )
 
-def client_installer( type, script, number, test ):
+def client_installer( type, script, current, previous=None, test=False):
 	
 	verbose( 'Running %s installer %s' % ( type, script ), False )
 	
@@ -518,7 +533,13 @@ def client_installer( type, script, number, test ):
 		
 		if not test:
 			line = line.replace( '_version_number', '' )
-		line = line.replace( 'version_number', number )
+		else:
+			line = line.replace( '_version_number', '_test' )
+		
+		if previous:
+			line = line.replace( 'old_version_number', previous )
+		
+		line = line.replace( 'version_number', current )
 		
 		f.write( line )
 	
@@ -529,7 +550,11 @@ def client_installer( type, script, number, test ):
 		os.spawnl(os.P_WAIT, exec_inno, os.path.basename( exec_inno ), '/cc', final)
 		
 		output   = os.path.join( installer_path, 'Output', 'setup.exe' )
-		filename = os.path.join( builds_path, 'pr_%s_%s_setup.exe' % ( number, type ) )
+		
+		if previous:
+			filename = os.path.join( builds_path, 'pr_%s_to_%s_%s_setup.exe' % ( previous, current, type ) )
+		else:
+			filename = os.path.join( builds_path, 'pr_%s_%s_setup.exe' % ( current, type ) )
 		
 		delete( filename )
 		copy( output, filename )
