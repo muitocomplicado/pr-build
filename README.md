@@ -19,7 +19,7 @@ Requires Python 2.3+
 
 		-c --core         revisions separated by commas (no spaces)
 		-l --levels       revisions separated by commas (no spaces)
-		-n --number       version number (e.g. 0856)
+		-n --number       version numbers separated by commas (no spaces) e.g. 0901,0902
 
 	Build options:
 
@@ -29,7 +29,7 @@ Requires Python 2.3+
 
 	Examples:
 
-		python pr_build.py --core 2334,2356 --levels 456,488 --number 0856 --build --server
+		python pr_build.py --core 2334,2356 --levels 456,488 --number 0856,0857 --build --server
 		python pr_build.py -c 2334 -l 456 -n 0856 --build --test
 
 	Other options:
@@ -61,7 +61,7 @@ Requires Python 2.3+
 
 You can run a test with the dummy data in the `test` folder by running `pr_build_test.py` with the following command:
 
-	python pr_build_test.py -c 0,1,2 -l 0,1,2 -n 0123 -b -s -t -v
+	python pr_build_test.py -c 0,1,2 -l 0,1,2 -n 0123,0124,0125 -b -s -t -v
 
 The results will be in the `test_builds` folder.
 
