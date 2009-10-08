@@ -6,12 +6,11 @@ import getopt
 import os
 import os.path
 import stat
-import fnmatch
 import compileall
 
 from xml.dom import minidom
-from time import sleep
 
+from pr_utils import *
 import pr_svn
 
 help_message = '''
@@ -371,8 +370,8 @@ def build_client( patch ):
 	if options['export']:
 		verbose( 'REPO EXPORT %s' % patch )
 		
-		delete( cb )
-		delete( lb )
+		delete( path=cb, verbose=options['verbose'] )
+		delete( path=lb, verbose=options['verbose'] )
 		
 		if not patch:
 			
@@ -387,21 +386,21 @@ def build_client( patch ):
 			if core_lrevision <= int( core_revision ):
 				core_log = log_repo( core_path, core_lrevision, core_revision )
 				for path in paths_repo( core_log, patch, options['paths'] ):
-					copy( os.path.join( core_path, path ), os.path.join( cb, path ) )
+					copy( os.path.join( core_path, path ), os.path.join( cb, path ), options['verbose'] )
 			
 			if levels_lrevision <= int( levels_revision ):
 				levels_log = log_repo( levels_path, levels_lrevision, levels_revision )
 				for path in paths_repo( levels_log, patch, options['paths'] ):
-					copy( os.path.join( levels_path, path ), os.path.join( lb, path ) )
+					copy( os.path.join( levels_path, path ), os.path.join( lb, path ), options['verbose'] )
 		
 	if options['cleanup']:
 		verbose( 'CLEANUP %s' % patch )
 
-		delete( os.path.join( cb, 'build_pr_new.bat' ) )
-		delete( os.path.join( cb, 'readme', 'assets' ) )
-		delete( cb, 'bst*.md5' )
-		delete( lb, 'assets', True )
-		delete( lb, 'server', True )
+		delete( path=os.path.join( cb, 'build_pr_new.bat' ), verbose=options['verbose'] )
+		delete( path=os.path.join( cb, 'readme', 'assets' ), verbose=options['verbose'] )
+		delete( path=cb, pattern='bst*.md5', verbose=options['verbose'] )
+		delete( path=lb, pattern='assets', recursive=True, verbose=options['verbose'] )
+		delete( path=lb, pattern='server', recursive=True, verbose=options['verbose'] )
 		clean_archives( cb, core_archives[options['zip']]['server'] )
 		clean_archives( cb, core_archives[options['zip']]['client'] )
 		empty_archives( cb, core_revision )
@@ -413,9 +412,9 @@ def build_client( patch ):
 		build_archives( cb, core_archives[options['zip']]['server'], sufix )
 		build_archives( cb, core_archives[options['zip']]['client'], sufix )
 		copy( os.path.join( cb, 'shaders_client%s.zip' % sufix ), 
-					os.path.join( cb, 'shaders_client_pr%s.zip' % sufix ) )
+					os.path.join( cb, 'shaders_client_pr%s.zip' % sufix ), options['verbose'] )
 		copy( os.path.join( cb, 'shaders_client%s.zip' % sufix ), 
-					os.path.join( cb, 'shaders_night_client%s.zip' % sufix ) )
+					os.path.join( cb, 'shaders_night_client%s.zip' % sufix ), options['verbose'] )
 		delete_archives( cb, core_archives[options['zip']]['server'] )
 		delete_archives( cb, core_archives[options['zip']]['client'] )
 		update_archives( patch )
@@ -424,67 +423,67 @@ def build_client( patch ):
 	if patch:
 		verbose( 'MERGE PATCH %s' % patch )
 		
-		merge( cb, core_build )
-		merge( lb, levels_build )
+		merge( cb, core_build,   options['verbose'] )
+		merge( lb, levels_build, options['verbose'] )
 		
 def build_python( patch ):
 	
 	verbose( 'PYTHON BUILD %s' % patch )
 	
-	delete( os.path.join( core_build, 'python', 'game' ) )
+	delete( path=os.path.join( core_build, 'python', 'game' ), verbose=options['verbose'] )
 	export_repo( os.path.join( core_path, 'python', 'game' ), os.path.join( core_build, 'python', 'game' ) )
 	compile_python( os.path.join( core_build, 'python', 'game' ) )
 	clean_python( os.path.join( core_build, 'python' ) )
 	
 	if patch:
-		delete( os.path.join( path_core_build( patch ), 'python', 'game' ) )
-		copy( os.path.join( core_build, 'python', 'game' ), os.path.join( path_core_build( patch ), 'python', 'game' ) )
+		delete( path=os.path.join( path_core_build( patch ), 'python', 'game' ), verbose=options['verbose'] )
+		copy( os.path.join( core_build, 'python', 'game' ), os.path.join( path_core_build( patch ), 'python', 'game' ), options['verbose'] )
 
 def build_patch( patch ):
 	
 	verbose( 'PATCH BUILD %s' % patch )
 	
-	delete( patch_build )
-	merge( path_core_build( patch ),   patch_build )
-	merge( path_levels_build( patch ), os.path.join( patch_build, 'levels' ) )
+	delete( path=patch_build, verbose=options['verbose'] )
+	merge( path_core_build( patch ),   patch_build,                           options['verbose'] )
+	merge( path_levels_build( patch ), os.path.join( patch_build, 'levels' ), options['verbose'] )
 
 def build_server( patch ):
 	
 	verbose( 'SERVER BUILD %s' % patch )
 	
-	delete( server_build )
-	merge( core_build, server_build )
-	merge( levels_build, os.path.join( server_build, 'levels' ) )
+	delete( path=server_build, verbose=options['verbose'] )
+	merge( core_build,   server_build,                           options['verbose'] )
+	merge( levels_build, os.path.join( server_build, 'levels' ), options['verbose'] )
 	
 	verbose( 'SERVER CLEANUP' )
 
-	delete( os.path.join( server_build, 'levels' ), '*client.zip', True )
-	delete( os.path.join( server_build, 'levels' ), '*.png', True )
+	delete( os.path.join( server_build, 'levels' ), '*client.zip', True, [], options['verbose'] )
+	delete( os.path.join( server_build, 'levels' ), '*.png',       True, [], options['verbose'] )
 
 	for p,o in core_archives[options['zip']]['client'].iteritems():
-		delete( os.path.join( server_build, '%s.zip' % p.replace('/',os.sep) ) )
+		delete( path=os.path.join( server_build, '%s.zip' % p.replace('/',os.sep) ), verbose=options['verbose'] )
 		for i in range( 1, patch+1 ):
-			delete( os.path.join( server_build, '%s_patch%s.zip' % ( p.replace('/',os.sep), i ) ) )
+			delete( path=os.path.join( server_build, '%s_patch%s.zip' % ( p.replace('/',os.sep), i ) ), verbose=options['verbose'] )
 	
-	delete( os.path.join( server_build, 'shaders_client_pr.zip' ) )
-	delete( os.path.join( server_build, 'shaders_night_client.zip' ) )
+	delete( path=os.path.join( server_build, 'shaders_client_pr.zip' ), verbose=options['verbose'] )
+	delete( path=os.path.join( server_build, 'shaders_night_client.zip' ), verbose=options['verbose'] )
 	
 	for i in range( 1, patch+1 ):
-		delete( os.path.join( server_build, 'shaders_client_pr_patch%s.zip' % i ) )
-		delete( os.path.join( server_build, 'shaders_night_client_patch%s.zip' % i ) )
+		delete( path=os.path.join( server_build, 'shaders_client_pr_patch%s.zip' % i ), verbose=options['verbose'] )
+		delete( path=os.path.join( server_build, 'shaders_night_client_patch%s.zip' % i ), verbose=options['verbose'] )
 	
-	delete( os.path.join( server_build, archives_con['client'] ) )
-	delete( os.path.join( server_build, 'menu', 'external' ) )
-	delete( os.path.join( server_build, 'readme', 'bf2editor' ) )
-	delete( os.path.join( server_build, 'readme', 'dotnet' ) )
-	delete( os.path.join( server_build, 'readme', 'icons' ) )
-	delete( os.path.join( server_build, 'readme' ), '*.txt', False, ['license.txt'] )
-	delete( os.path.join( server_build, 'readme' ), '*.pdf' )
-	delete( os.path.join( server_build, 'movies' ) )
-	delete( os.path.join( server_build, '00000000.256' ) )
-	delete( os.path.join( server_build, 'pr.exe' ) )
+	delete( path=os.path.join( server_build, archives_con['client'] ), verbose=options['verbose'] )
+	delete( path=os.path.join( server_build, 'menu', 'external' ), verbose=options['verbose'] )
+	delete( path=os.path.join( server_build, 'readme', 'bf2editor' ), verbose=options['verbose'] )
+	delete( path=os.path.join( server_build, 'readme', 'dotnet' ), verbose=options['verbose'] )
+	delete( path=os.path.join( server_build, 'readme', 'icons' ), verbose=options['verbose'] )
+	delete( path=os.path.join( server_build, 'readme' ), pattern='*.pdf', verbose=options['verbose'] )
+	delete( path=os.path.join( server_build, 'movies' ), verbose=options['verbose'] )
+	delete( path=os.path.join( server_build, '00000000.256' ), verbose=options['verbose'] )
+	delete( path=os.path.join( server_build, 'pr.exe' ), verbose=options['verbose'] )
+	delete( os.path.join( server_build, 'readme' ), '*.txt', False, ['license.txt'], options['verbose'] )
 	
-	# rename( os.path.join( server_build, 'settings', 'prserverusersettings.con' ), os.path.join( server_build, 'settings', 'usersettings.con' ) )
+	# rename( os.path.join( server_build, 'settings', 'prserverusersettings.con' ), os.path.join( server_build, 'settings', 'usersettings.con' ), options['verbose'] )
 	# os.chmod( os.path.join( server_build, 'settings', 'usersettings.con' ), stat.S_IREAD )
 	
 def server_installer( current, test ):
@@ -498,12 +497,12 @@ def server_installer( current, test ):
 	
 	filename = os.path.join( builds_path, 'pr_%s_server.zip' % current )
 	
-	delete( server_build_renamed )
+	delete( path=server_build_renamed, verbose=options['verbose'] )
 	
-	rename( server_build, server_build_renamed )
-	delete( filename )
+	rename( server_build, server_build_renamed, options['verbose'] )
+	delete( path=filename, verbose=options['verbose'] )
 	zip( server_build_renamed, filename, True )
-	rename( server_build_renamed, server_build )
+	rename( server_build_renamed, server_build, options['verbose'] )
 
 def core_installer( current, test ):
 	
@@ -556,9 +555,9 @@ def client_installer( type, script, current, previous=None, test=False):
 		else:
 			filename = os.path.join( builds_path, 'pr_%s_%s_setup.exe' % ( current, type ) )
 		
-		delete( filename )
-		copy( output, filename )
-		delete( output )
+		delete( path=filename, verbose=options['verbose'] )
+		copy( output, filename, options['verbose'] )
+		delete( path=output, verbose=options['verbose'] )
 
 def path_core_build( patch ):
 	if patch:
@@ -623,18 +622,18 @@ def clean_archives( path, archives ):
 		
 		verbose( 'Cleaning %s' % ( dir ), False )
 		
-		delete( dir, 'assets', True )
-		delete( dir, '*.db', True )
-		delete( dir, '*.samp*', True ) 
-		delete( dir, '*.max', True )
-		delete( dir, '*.3ds', True )
-		delete( dir, '*.psd', True )
-		delete( dir, 'samples.tga', True )
-		delete( dir, 'uvs.tga', True )
+		delete( path=dir, pattern='assets',      recursive=True, verbose=options['verbose'] )
+		delete( path=dir, pattern='*.db',        recursive=True, verbose=options['verbose'] )
+		delete( path=dir, pattern='*.samp*',     recursive=True, verbose=options['verbose'] ) 
+		delete( path=dir, pattern='*.max',       recursive=True, verbose=options['verbose'] )
+		delete( path=dir, pattern='*.3ds',       recursive=True, verbose=options['verbose'] )
+		delete( path=dir, pattern='*.psd',       recursive=True, verbose=options['verbose'] )
+		delete( path=dir, pattern='samples.tga', recursive=True, verbose=options['verbose'] )
+		delete( path=dir, pattern='uvs.tga',     recursive=True, verbose=options['verbose'] )
 		
 		if p in filter_archives[options['zip']]:
 			for f in filter_archives[options['zip']][p]:
-				delete( dir, f, True )
+				delete( path=dir, pattern=f, recursive=True, verbose=options['verbose'] )
 		
 		verbose( 'Deleting empty folders from %s' % ( dir ), False )
 		
@@ -662,17 +661,17 @@ def build_archives( path, archives, sufix='' ):
 			folder = False
 		
 		if o[1]:
-			rename( dir, ren )
+			rename( dir, ren, options['verbose'] )
 		
 		verbose( 'Building archive %s from %s' % ( file, ren ), False )
 		
 		if os.path.exists( file ):
-			delete( file )
+			delete( path=file, verbose=options['verbose'] )
 		
 		zip( ren, file, folder )
 		
 		if o[1]:
-			rename( ren, dir )
+			rename( ren, dir, options['verbose'] )
 
 def compile_python( path ):
 	
@@ -683,15 +682,15 @@ def clean_python( path ):
 	
 	verbose( 'Cleaning python %s' % path, False )
 	
-	delete( path, 'assets', True )
-	delete( path, 'compiled', True )
-	delete( path, 'debug', True )
+	delete( path=path, pattern='assets',   recursive=True, verbose=options['verbose'] )
+	delete( path=path, pattern='compiled', recursive=True, verbose=options['verbose'] )
+	delete( path=path, pattern='debug',    recursive=True, verbose=options['verbose'] )
 	
 	game = os.path.join( path, 'game' )
-	delete( game, '*.py', True, [ '__init__.py', 'gpm_*.py', 'realityconfig_common.py', 'realityconfig_local.py', 'realityconfig_private.py', 'realityconfig_coop.py' ] )
-	delete( game, 'gpm_*.pyc', True )
-	delete( game, 'realityconfig_*.pyc', True, [ 'realityconfig_public.pyc' ] )
-	delete( game, '__init__.pyc', True )
+	delete( game, '*.py', True, [ '__init__.py', 'gpm_*.py', 'realityconfig_common.py', 'realityconfig_local.py', 'realityconfig_private.py', 'realityconfig_coop.py' ], options['verbose'] )
+	delete( game, 'gpm_*.pyc', True, [], options['verbose'] )
+	delete( game, 'realityconfig_*.pyc', True, [ 'realityconfig_public.pyc' ], options['verbose'] )
+	delete( game, '__init__.pyc', True, [], options['verbose'] )
 
 def delete_archives( path, archives ):
 	
@@ -702,7 +701,7 @@ def delete_archives( path, archives ):
 			continue
 		
 		verbose( 'Deleting archive folder %s' % dir, False )
-		delete( dir )
+		delete( path=dir, verbose=options['verbose'] )
 
 def update_archives( patch ):
 	
@@ -712,7 +711,7 @@ def update_archives( patch ):
 		build_filecon = os.path.join( core_build, filecon )
 		patch_filecon = os.path.join( path_core_build( patch ), filecon )
 		
-		copy( repo_filecon, patch_filecon )
+		copy( repo_filecon, patch_filecon, options['verbose'] )
 		
 		if not patch:
 			continue
@@ -747,7 +746,7 @@ def update_archives( patch ):
 		g.write( archive_content )
 		g.close()
 	
-		copy( patch_filecon, build_filecon )
+		copy( patch_filecon, build_filecon, options['verbose'] )
 
 def verbose( text, prefix=True ):
 	if options['verbose']:
@@ -756,92 +755,6 @@ def verbose( text, prefix=True ):
 		else:
 			print text
 
-def rename( source, destination ):
-	
-	if not os.path.exists( source ):
-		return
-		
-	verbose( 'Renaming %s to %s' % ( source, destination ), False )
-	os.rename( source, destination )
-	delay()
-	# os.system( 'ren %s %s' % ( source, destination ) )
-
-def paths( path, pattern='*', recursive=False, exclude=[] ):
-	
-	if not os.path.isdir( path ):
-		return []
-	
-	# if '.*' not in exclude:
-	# 	exclude.append( '.*' )
-
-	list = []
-	for root, dirs, files in os.walk( path ):
-		
-		if '.svn' in dirs:
-			dirs.remove( '.svn' )
-			
-		for f in filter( files, pattern, exclude ):
-			list.append( os.path.join( root, f ) )
-			
-		for f in filter( dirs, pattern, exclude ):
-			list.append( os.path.join( root, f ) )
-			
-		if not recursive:
-			break
-
-	list.sort()
-	return list
-
-def filter( list, pattern, exclude ):
-	
-	items = fnmatch.filter( list, pattern )
-	
-	remove = []
-	for e in exclude:
-		remove.extend( fnmatch.filter( items, e ) )
-	for r in remove:
-		items.remove( r )
-	
-	return items
-
-def delete( path, pattern=None, recursive=False, exclude=[] ):
-	
-	if not os.path.exists( path ):
-		return
-	
-	if pattern:
-		
-		verbose( 'Deleting %s pattern %s recursive %s exclude %s' % ( path, pattern, recursive, exclude ), False )
-		
-		for p in paths( path, pattern, recursive, exclude ):
-			
-			r = os.path.dirname( p )
-			delete( p )
-			
-			if not os.path.exists( r ) or not recursive:
-				continue
-			
-			if len( os.listdir( r ) ) == 0:
-				os.rmdir( r )
-		
-	else: 
-		
-		verbose( 'Deleting %s' % path, False )
-		
-		if os.path.isdir( path ):
-			for root, dirs, files in os.walk(path, topdown=False):
-				for name in files:
-					os.chmod(os.path.join(root, name), stat.S_IWRITE)
-					os.remove(os.path.join(root, name))
-				for name in dirs:
-					os.rmdir(os.path.join(root, name))
-			os.rmdir(path)
-			# os.system( 'rd /S %s %s' % ( q, path ) )
-		else:
-			os.chmod(path, stat.S_IWRITE)
-			os.remove(path)
-			# os.system( 'del /F %s %s %s' % ( q, r, path ) )
-		
 def zip( source, destination, folder=False, filters='' ):
 	
 	if not os.path.exists( source ):
@@ -867,57 +780,9 @@ def zip( source, destination, folder=False, filters='' ):
 	
 	os.chdir( root )
 
-def copy( source, destination ):
-
-	if not os.path.exists( source ):
-		return
-	
-	if not os.path.exists( os.path.dirname( destination ) ):
-		os.makedirs( os.path.dirname( destination ) )
-	
-	if not os.path.isdir( source ):
-		verbose( 'Copying %s to %s' % ( source, destination ), False )
-		if os.name in ['posix','mac']:
-			os.system( 'cp -f "%s" "%s"' % ( source, destination ) )
-		else:
-			os.system( 'copy "%s" "%s" /Y' % ( source, destination ) )
-		return
-	
-	for root, dirs, files in os.walk( source ):
-		
-		if '.svn' in dirs:
-			dirs.remove( '.svn' )
-		
-		pref = os.path.commonprefix( ( source, root ) )
-		s = os.path.join( root )
-		d = os.path.join( destination, root.replace( pref, '' ).strip(os.sep) )
-		
-		for name in files:
-			copy( os.path.join( s, name ), os.path.join( d, name ) )
-		
-		for name in dirs:
-			if not os.path.exists( os.path.join( d, name ) ):
-				verbose( 'Creating dir %s' % os.path.join( d, name ), False )
-				os.makedirs( os.path.join( d, name ) )
-
-def merge( source, destination ):
-	
-	if not os.path.exists( source ):
-		return
-	
-	verbose( 'Merging %s to %s' % ( source, destination ), False )
-	
-	if os.name in ['posix','mac']:
-		copy( source, destination )
-	else:
-		os.system( 'xcopy "%s" "%s" /E /Q /I /Y' % ( source, destination ) )
-
 def wait():
 	if options['wait']:
 		os.system('pause')
-
-def delay():
-	sleep(10)
 
 if __name__ == "__main__":
 	sys.exit(main())

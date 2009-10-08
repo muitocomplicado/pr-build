@@ -5,6 +5,7 @@ import sys
 import os
 import os.path
 import pr_build
+import pr_utils
 
 from time import sleep
 
@@ -70,7 +71,7 @@ pr_build.update_repo = update_repo
 pr_build.export_repo = export_repo
 pr_build.log_repo    = log_repo
 pr_build.paths_repo  = paths_repo
-pr_build.delay       = delay
+pr_utils.delay       = delay
 
 if __name__ == "__main__":
 	
