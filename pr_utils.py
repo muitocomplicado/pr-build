@@ -35,10 +35,10 @@ def paths( path, pattern='*', recursive=False, exclude=[] ):
 		if '.svn' in dirs:
 			dirs.remove( '.svn' )
 			
-		for f in filter( files, pattern, exclude ):
+		for f in filtering( files, pattern, exclude ):
 			list.append( os.path.join( root, f ) )
 			
-		for f in filter( dirs, pattern, exclude ):
+		for f in filtering( dirs, pattern, exclude ):
 			list.append( os.path.join( root, f ) )
 			
 		if not recursive:
@@ -47,7 +47,7 @@ def paths( path, pattern='*', recursive=False, exclude=[] ):
 	list.sort()
 	return list
 
-def filter( list, pattern, exclude ):
+def filtering( list, pattern, exclude ):
 	
 	items = fnmatch.filter( list, pattern )
 	
