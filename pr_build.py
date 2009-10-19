@@ -404,7 +404,7 @@ def build_client( patch ):
 		clean_archives( cb, core_archives[options['zip']]['server'] )
 		clean_archives( cb, core_archives[options['zip']]['client'] )
 		empty_archives( cb, core_revision )
-		
+		clean_atlas( cb )
 	
 	if options['archive']:
 		verbose( 'ARCHIVE %s' % patch )
@@ -691,6 +691,41 @@ def clean_python( path ):
 	delete( game, 'gpm_*.pyc', True, [], options['verbose'] )
 	delete( game, 'realityconfig_*.pyc', True, [ 'realityconfig_public.pyc' ], options['verbose'] )
 	delete( game, '__init__.pyc', True, [], options['verbose'] )
+
+def clean_atlas( path ):
+
+	verbose( 'Cleaning atlas files %s' % path, False )
+	
+	r = re.compile('^Menu\\\(\S+)\s+?.*$')
+	
+	menu_server = os.path.join( path, 'menu', 'menu_server-zip' )
+	menu_client = os.path.join( path, 'menu', 'menu_client-zip' )
+	
+	if not os.path.exists(menu_client) or not os.path.exists(menu_server):
+		return
+	
+	tac = os.path.join( menu_server, 'Atlas', 'PR_MemeAtlas.tac' )
+	
+	if not os.path.exists(tac):
+		return
+	
+	for line in open(tac):
+		
+		match = r.search(line)
+		if not match:
+			continue
+
+		filename = match.group(1)
+		filename = filename.replace('/', os.sep)
+		filename = filename.replace('\\', os.sep)
+		
+		filename = os.path.join( menu_client, filename )
+
+		if not os.path.exists( filename ):
+			continue
+		
+		# print filename
+		delete( filename )
 
 def delete_archives( path, archives ):
 	
