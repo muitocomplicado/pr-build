@@ -715,11 +715,7 @@ def clean_atlas( path ):
 		if not match:
 			continue
 
-		filename = match.group(1)
-		filename = filename.replace('/', os.sep)
-		filename = filename.replace('\\', os.sep)
-		
-		filename = os.path.join( menu_client, filename )
+		filename = os.path.join( menu_client, os.path.normcase( match.group(1) ) )
 
 		if not os.path.exists( filename ):
 			continue
