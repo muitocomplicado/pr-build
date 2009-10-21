@@ -461,9 +461,9 @@ def build_server( patch ):
 	delete( os.path.join( server_build, 'levels' ), '*.png',       True, [], options['verbose'] )
 
 	for p,o in core_archives[options['zip']]['client'].iteritems():
-		delete( path=os.path.join( server_build, '%s.zip' % p.replace('/',os.sep) ), verbose=options['verbose'] )
+		delete( path=os.path.join( server_build, '%s.zip' % os.path.normcase( p ) ), verbose=options['verbose'] )
 		for i in range( 1, patch+1 ):
-			delete( path=os.path.join( server_build, '%s_patch%s.zip' % ( p.replace('/',os.sep), i ) ), verbose=options['verbose'] )
+			delete( path=os.path.join( server_build, '%s_patch%s.zip' % ( os.path.normcase( p ), i ) ), verbose=options['verbose'] )
 	
 	delete( path=os.path.join( server_build, 'shaders_client_pr.zip' ), verbose=options['verbose'] )
 	delete( path=os.path.join( server_build, 'shaders_night_client.zip' ), verbose=options['verbose'] )
@@ -605,17 +605,17 @@ def empty_archives( path, revision ):
 		if revision > rev:
 			continue
 		for p,dirs in paths.iteritems():
-			dir = os.path.join( path, p.replace('/',os.sep) + '-zip' )
+			dir = os.path.join( path, os.path.normcase( p ) + '-zip' )
 			if not os.path.exists( dir ):
 				continue
 			for d in dirs:
-				os.makedirs( os.path.join( dir, d.replace('/',os.sep) ) )
+				os.makedirs( os.path.join( dir, os.path.normcase( d ) ) )
 
 def clean_archives( path, archives ):
 
 	for p,o in archives.iteritems():
 		
-		dir  = os.path.join( path, '%s-zip'   % ( p.replace('/',os.sep) ) )
+		dir  = os.path.join( path, '%s-zip'   % ( os.path.normcase( p ) ) )
 		
 		if not os.path.exists( dir ):
 			continue
@@ -646,8 +646,8 @@ def build_archives( path, archives, sufix='' ):
 	
 	for p,o in archives.iteritems():
 		
-		dir  = os.path.join( path, '%s-zip'   % ( p.replace('/',os.sep) ) )
-		file = os.path.join( path, '%s%s.zip' % ( p.replace('/',os.sep), sufix ) )
+		dir  = os.path.join( path, '%s-zip'   % ( os.path.normcase( p ) ) )
+		file = os.path.join( path, '%s%s.zip' % ( os.path.normcase( p ), sufix ) )
 		
 		if not os.path.exists( dir ):
 			continue
@@ -726,7 +726,7 @@ def clean_atlas( path ):
 def delete_archives( path, archives ):
 	
 	for p,o in archives.iteritems():
-		dir = os.path.join( path, '%s-zip' % p.replace('/',os.sep) )
+		dir = os.path.join( path, '%s-zip' % os.path.normcase( p ) )
 		
 		if not os.path.exists( dir ):
 			continue
@@ -762,7 +762,7 @@ def update_archives( patch ):
 			patch_content = ''
 			for p,o in core_archives[options['zip']][type].iteritems():
 				
-				ps = os.path.join( path_core_build( i ), p.replace('/',os.sep) )
+				ps = os.path.join( path_core_build( i ), os.path.normcase( p ) )
 				
 				if os.path.exists( '%s_patch%s.zip' % ( ps, i ) ):
 					verbose( 'Updating %s to mount %s_patch%s.zip' % ( filecon, p, i ), False )
