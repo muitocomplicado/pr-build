@@ -5,6 +5,7 @@ Some utility scripts used for creating [Project Reality Mod](http://realitymod.c
 * `pr_build.py` is a build creator for full and patch builds.
 * `pr_changelog.py` is a changelog creator for parsing repo logs.
 * `pr_svn.py` utility functions for dealing with svn.
+* `pr_utils.py` utility functions for dealing with common system operations.
 
 Requires Python 2.3+
 
