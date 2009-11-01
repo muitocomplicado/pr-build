@@ -7,6 +7,7 @@ import os
 import os.path
 import stat
 import compileall
+import re
 
 from xml.dom import minidom
 
