@@ -492,7 +492,7 @@ def server_installer( current, test ):
 	verbose( 'SERVER INSTALLER %s TEST %s' % ( current, test ) )
 	
 	if test:
-		server_build_renamed = os.path.join( builds_path, 'pr_%s' % current )
+		server_build_renamed = os.path.join( builds_path, 'pr_test' )
 	else:
 		server_build_renamed = os.path.join( builds_path, 'pr' )
 	
