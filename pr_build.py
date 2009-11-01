@@ -397,7 +397,7 @@ def build_client( patch ):
 	if options['cleanup']:
 		verbose( 'CLEANUP %s' % patch )
 
-		delete( path=os.path.join( cb, 'build_pr_new.bat' ), verbose=options['verbose'] )
+		delete( path=os.path.join( cb, 'build_pr.bat' ), verbose=options['verbose'] )
 		delete( path=os.path.join( cb, 'readme', 'assets' ), verbose=options['verbose'] )
 		delete( path=cb, pattern='bst*.md5', verbose=options['verbose'] )
 		delete( path=lb, pattern='assets', recursive=True, verbose=options['verbose'] )
