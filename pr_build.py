@@ -531,13 +531,13 @@ def client_installer( type, script, current, previous=None, test=False):
 	
 	for line in b:
 		
+		if previous:
+			line = line.replace( 'old_version_number', previous )
+		
 		if not test:
 			line = line.replace( '_version_number', '' )
 		else:
 			line = line.replace( '_version_number', '_test' )
-		
-		if previous:
-			line = line.replace( 'old_version_number', previous )
 		
 		line = line.replace( 'version_number', current )
 		
