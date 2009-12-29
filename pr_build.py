@@ -551,9 +551,17 @@ def client_installer( type, script, current, previous=None, test=False):
 	b = open( script, 'r' )
 	f = open( final,  'w' )
 	
+	if options['password']:
+		password = options['password']
+		encryption = 'yes'
+	else:
+		password = ''
+		encryption = 'no'
+	
 	for line in b:
 		
-		line = line.replace( 'pr_password', options['password'] )
+		line = line.replace( 'pr_password', password )
+		line = line.replace( 'pr_encryption', encryption )
 		
 		if previous:
 			line = line.replace( 'old_version_number', previous )
