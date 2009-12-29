@@ -25,6 +25,7 @@ Main options:
 
 	-c --core         revisions separated by commas (no spaces)
 	-l --levels       revisions separated by commas (no spaces)
+	-o --localization revisions separated by commas (no spaces)
 	-n --number       version numbers separated by commas (no spaces) e.g. 0901,0902
 
 Build options:
@@ -79,6 +80,8 @@ installer_path        = os.path.join( core_path, 'readme', 'assets', 'builds', '
 core_installer_path   = os.path.join( installer_path, 'pr_core_base.iss' )
 levels_installer_path = os.path.join( installer_path, 'pr_levels_base.iss' )
 patch_installer_path  = os.path.join( installer_path, 'pr_patch_base.iss' )
+
+localization_path = os.path.join( core_path, 'localization' )
 
 filter_archives = {
 	'v1': {
@@ -176,6 +179,7 @@ core_archives = {
 options = {
 	'core': None,
 	'levels': None,
+	'localization': None,
 	'number': None,
 	'patch': None, # internal
 	
@@ -211,8 +215,8 @@ def main(argv=None):
 	try:
 		try:
 			opts, args = getopt.getopt(argv[1:], 
-				"hc:l:n:bstkwp:z:yiueavq", 
-				[ "help", "core=", "levels=", "number=", "build", "server", "test", "skip", "wait", 
+				"hc:l:o:n:bstkwp:z:yiueavq", 
+				[ "help", "core=", "levels=", "localization=", "number=", "build", "server", "test", "skip", "wait", 
 					"paths=", "zip=", "python", "installer", "update", "export", "archive", "verbose", "quiet" ])
 		except getopt.error, msg:
 			raise Usage(msg)
@@ -226,6 +230,8 @@ def main(argv=None):
 				options['core'] = value.split(',')
 			if option in ("-l", "--levels"):
 				options['levels'] = value.split(',')
+			if option in ("-o", "--localization"):
+				options['localization'] = value.split(',')
 			if option in ("-n", "--number"):
 				options['number'] = value.split(',')
 			
@@ -273,7 +279,12 @@ def main(argv=None):
 		if len( options['core'] ) != len( options['number'] ):
 			raise Usage('Number of revisions is different than the total of version numbers.')
 		
-		for r in ['core','levels']:
+		if options['localization'] and len( options['core'] ) != len( options['localization'] ):
+			raise Usage('Number of revisions is different between core and localization')
+		
+		for r in ['core','levels','localization']:
+			if not options[r]:
+				continue
 			last_rev = 0
 			for rev in options[r]:
 				if last_rev > int( rev ):
@@ -351,8 +362,8 @@ def build_client( patch ):
 	
 	verbose( 'CLIENT BUILD %s' % patch )
 	
-	core_revision   = options['core'][patch]
-	levels_revision = options['levels'][patch]
+	core_revision         = options['core'][patch]
+	levels_revision       = options['levels'][patch]
 	
 	cb = path_core_build( patch )
 	lb = path_levels_build( patch )
@@ -367,6 +378,9 @@ def build_client( patch ):
 		
 		update_repo( core_path, core_revision )
 		update_repo( levels_path, levels_revision )
+		
+		if options['localization']:
+			update_repo( localization_path, options['localization'][patch] )
 		
 	if options['export']:
 		verbose( 'REPO EXPORT %s' % patch )
@@ -394,6 +408,10 @@ def build_client( patch ):
 				for path in paths_repo( levels_log, patch, options['paths'] ):
 					copy( os.path.join( levels_path, path ), os.path.join( lb, path ), options['verbose'] )
 		
+		if options['localization']:
+			delete( path=os.path.join( cb, 'localization'), verbose=options['verbose'] )
+			export_repo( localization_path, os.path.join( cb, 'localization') )
+		
 	if options['cleanup']:
 		verbose( 'CLEANUP %s' % patch )
 
@@ -419,7 +437,6 @@ def build_client( patch ):
 		delete_archives( cb, core_archives[options['zip']]['server'] )
 		delete_archives( cb, core_archives[options['zip']]['client'] )
 		update_archives( patch )
-	
 	
 	if patch:
 		verbose( 'MERGE PATCH %s' % patch )
