@@ -20,6 +20,7 @@ Requires Python 2.3+
 
 		-c --core         revisions separated by commas (no spaces)
 		-l --levels       revisions separated by commas (no spaces)
+		-o --localization revisions separated by commas (no spaces)
 		-n --number       version numbers separated by commas (no spaces) e.g. 0901,0902
 
 	Build options:
@@ -32,6 +33,7 @@ Requires Python 2.3+
 
 		python pr_build.py --core 2334,2356 --levels 456,488 --number 0856,0857 --build --server
 		python pr_build.py -c 2334 -l 456 -n 0856 --build --test
+		python pr_build.py -c 2334,2356,2389 -l 456,488,501 -o 56,77,89 -n 0856,0857,0858 --build --server --test
 
 	Other options:
 
