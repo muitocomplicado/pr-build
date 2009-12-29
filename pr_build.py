@@ -45,6 +45,7 @@ Other options:
 	-k --skip         skip to the last patch (must have all other builds ready)
 	-w --wait         pauses after each major subversion command
 	-z --zip          zip structure (default v2)
+	-x --password     defines the password for a passworded installer
 
 	-y --python       do not compile python
 	-i --installer    do not create installers
@@ -190,6 +191,7 @@ options = {
 	'skip': False,
 	'wait': False,
 	'zip': 'v2',
+	'password': '',
 	'paths': [ 'trunk', 'levels' ],
 	
 	'python': True,
@@ -216,9 +218,9 @@ def main(argv=None):
 	try:
 		try:
 			opts, args = getopt.getopt(argv[1:], 
-				"hc:l:o:n:bstkwp:z:yiueavq", 
+				"hc:l:o:n:bstkwp:z:x:yiueavq", 
 				[ "help", "core=", "levels=", "localization=", "number=", "build", "server", "test", "skip", "wait", 
-					"paths=", "zip=", "python", "installer", "update", "export", "archive", "verbose", "quiet" ])
+					"paths=", "zip=", "password=", "python", "installer", "update", "export", "archive", "verbose", "quiet" ])
 		except getopt.error, msg:
 			raise Usage(msg)
 		
@@ -248,6 +250,8 @@ def main(argv=None):
 				options['wait'] = True
 			if option in ("-z", "--zip") and value in core_archives:
 				options['zip'] = value
+			if option in ("-x", "--password"):
+				options['password'] = value
 			if option in ("-p", "--paths"):
 				paths = value.split(',')
 				for p in paths:
@@ -548,6 +552,8 @@ def client_installer( type, script, current, previous=None, test=False):
 	f = open( final,  'w' )
 	
 	for line in b:
+		
+		line = line.replace( 'pr_password', options['password'] )
 		
 		if previous:
 			line = line.replace( 'old_version_number', previous )
