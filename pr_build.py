@@ -67,13 +67,13 @@ levels_path    = os.path.join( root_path, 'levels' )
 builds_path    = os.path.join( root_path, 'builds' )
 logs_path      = os.path.join( root_path, 'logs' )
 
-core_build     = os.path.join( builds_path, 'core' )
-levels_build   = os.path.join( builds_path, 'levels' )
+core_build     = os.path.join( builds_path, 'full1' )
+levels_build   = os.path.join( builds_path, 'full2' )
 server_build   = os.path.join( builds_path, 'server' )
 patch_build    = os.path.join( builds_path, 'patch' )
 
-core_build_patch   = os.path.join( builds_path, 'core_patch' )
-levels_build_patch = os.path.join( builds_path, 'levels_patch' )
+core_build_patch   = os.path.join( builds_path, 'full1_patch' )
+levels_build_patch = os.path.join( builds_path, 'full2_patch' )
 
 exec_7zip  = 'C:\\repos\\core\\readme\\assets\\7za.exe'
 exec_inno  = 'C:\\Program Files (x86)\\Inno Setup 5\\Compil32.exe'
