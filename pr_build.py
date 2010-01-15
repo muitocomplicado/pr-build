@@ -79,8 +79,8 @@ exec_7zip  = 'C:\\repos\\core\\readme\\assets\\7za.exe'
 exec_inno  = 'C:\\Program Files (x86)\\Inno Setup 5\\Compil32.exe'
 
 installer_path        = os.path.join( core_path, 'readme', 'assets', 'builds', 'installer' )
-core_installer_path   = os.path.join( installer_path, 'pr_core_base.iss' )
-levels_installer_path = os.path.join( installer_path, 'pr_levels_base.iss' )
+core_installer_path   = os.path.join( installer_path, 'pr_full1_base.iss' )
+levels_installer_path = os.path.join( installer_path, 'pr_full2_base.iss' )
 patch_installer_path  = os.path.join( installer_path, 'pr_patch_base.iss' )
 
 localization_path = os.path.join( core_path, 'localization' )
@@ -530,12 +530,12 @@ def server_installer( current, test ):
 def core_installer( current, test ):
 	
 	verbose( 'CORE INSTALLER %s TEST %s' % ( current, test ) )
-	client_installer( 'core', core_installer_path, current, None, test )
+	client_installer( 'full_part1of2', core_installer_path, current, None, test )
 	
 def levels_installer( current, test ):
 	
 	verbose( 'LEVELS INSTALLER %s TEST %s' % ( current, test ) )
-	client_installer( 'levels', levels_installer_path, current, None, test )
+	client_installer( 'full_part2of2', levels_installer_path, current, None, test )
 
 def patch_installer( current, previous, test ):
 	
