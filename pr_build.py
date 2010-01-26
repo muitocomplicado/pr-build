@@ -173,7 +173,21 @@ core_archives = {
 			'objects/vegitation_server': ( 'Objects', True ),
 			'objects/vehicles_server': ( 'Objects', True ),
 			'objects/water_server': ( 'Objects', True ),
-			'objects/weapons_server': ( 'Objects', True )
+			'objects/weapons_server': ( 'Objects', True ),
+			'inits/factions_cf': ( '', False ),
+			'inits/factions_ch': ( '', False ),
+			'inits/factions_chinsurgent': ( '', False ),
+			'inits/factions_common': ( '', False ),
+			'inits/factions_gb': ( '', False ),
+			'inits/factions_hamas': ( '', False ),
+			'inits/factions_idf': ( '', False ),
+			'inits/factions_mec': ( '', False ),
+			'inits/factions_meinsurgent': ( '', False ),
+			'inits/factions_ru': ( '', False ),
+			'inits/factions_taliban': ( '', False ),
+			'inits/factions_us': ( '', False ),
+			'inits/factions_usa': ( '', False ),
+			
 		}
 	}
 }
@@ -676,7 +690,11 @@ def build_archives( path, archives, sufix='' ):
 	for p,o in archives.iteritems():
 		
 		dir  = os.path.join( path, '%s-zip'   % ( os.path.normcase( p ) ) )
-		file = os.path.join( path, '%s%s.zip' % ( os.path.normcase( p ), sufix ) )
+		
+		if not o[0]:
+			file = os.path.join( path, '%s.zip' % ( os.path.normcase( p ) ) )
+		else:
+			file = os.path.join( path, '%s%s.zip' % ( os.path.normcase( p ), sufix ) )
 		
 		if not os.path.exists( dir ):
 			continue
@@ -684,6 +702,7 @@ def build_archives( path, archives, sufix='' ):
 		if o[1]:
 			ren = dir.replace( '_client-zip', '' )
 			ren = ren.replace( '_server-zip', '' )
+			ren = ren.replace( '-zip', '' )
 			folder = True
 		else:
 			ren = dir
@@ -790,6 +809,9 @@ def update_archives( patch ):
 			
 			patch_content = ''
 			for p,o in core_archives[options['zip']][type].iteritems():
+				
+				if not o[0]:
+					continue
 				
 				ps = os.path.join( path_core_build( i ), os.path.normcase( p ) )
 				
