@@ -855,10 +855,17 @@ def zip( source, destination, folder=False, filters='' ):
 		d = os.path.join( '..', os.path.basename( destination ) )
 		s = '*'
 	
-	if os.name in ['posix','mac']:
-		os.system( 'zip -r %s %s %s -x \*/assets/\* -x \*/.*' % ( options['quiet'], d, s ) ) 
+	if os.name not in ['posix','mac']:
+		
+		if options['quiet']:
+			q = '> nul'
+		else:
+			q = ''
+		
+		os.system( '"%s" a -tzip %s %s %s -xr!.svn\\ -xr!Assets\\ -xr!assets\\ %s' % ( exec_7zip, d, s, filters, q ) )
+	
 	else:
-		os.system( '"%s" a -tzip %s %s %s -xr!.svn\\ -xr!Assets\\ -xr!assets\\' % ( exec_7zip, d, s, filters ) )
+		os.system( 'zip -r %s %s %s -x \*/assets/\* -x \*/.*' % ( options['quiet'], d, s ) ) 
 	
 	os.chdir( root )
 
