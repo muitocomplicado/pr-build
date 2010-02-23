@@ -419,12 +419,12 @@ def build_client( patch ):
 			
 			if core_lrevision <= int( core_revision ):
 				core_log = log_repo( core_path, core_lrevision, core_revision )
-				for path in paths_repo( core_log, patch, options['paths'] ):
+				for path in paths_repo( core_log, options['paths'] ):
 					copy( os.path.join( core_path, path ), os.path.join( cb, path ), options['verbose'] )
 			
 			if levels_lrevision <= int( levels_revision ):
 				levels_log = log_repo( levels_path, levels_lrevision, levels_revision )
-				for path in paths_repo( levels_log, patch, options['paths'] ):
+				for path in paths_repo( levels_log, options['paths'] ):
 					copy( os.path.join( levels_path, path ), os.path.join( lb, path ), options['verbose'] )
 		
 		if options['localization']:
@@ -639,8 +639,8 @@ def log_repo( path, start, end ):
 	
 	return logs
 
-def paths_repo( log, patch, remove=['trunk'] ):
-	return pr_svn.get_paths( log, remove )
+def paths_repo( log, remove=['trunk'], deleted=False ):
+	return pr_svn.get_paths( log, remove, deleted )
 
 def empty_archives( path, revision ):
 	
