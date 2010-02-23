@@ -53,10 +53,11 @@ def export( path, destination, quiet=True ):
 	
 	return os.system( cmd )
 
-def get_paths( logs, remove=['trunk'], deleted=False ):
+def get_paths( logs, remove=['trunk'] ):
 	
-	paths = []
-	paths_deleted = []
+	added = []
+	modified = []
+	deleted = []
 	
 	for entry in logs:
 		for p in entry['paths']:
@@ -79,20 +80,30 @@ def get_paths( logs, remove=['trunk'], deleted=False ):
 				path = path.replace( '/',os.sep )
 			
 			if action == 'D':
-				if path in paths:
-					paths.remove( path )
-				if path not in paths_deleted:
-					paths_deleted.append( path )
-			else:
-				if path not in paths:
-					paths.append( path )
+				if path in added:
+					added.remove( path )
+				if path in modified:
+					modified.remove( path )
+				if path not in deleted:
+					deleted.append( path )
+			
+			elif action == 'M':
+				if path in deleted:
+					deleted.remove( path )
+				if path not in modified and path not in added:
+					modified.append( path )
+			
+			elif action == 'A':
+				if path in deleted:
+					deleted.remove( path )
+				if path not in added and path not in modified:
+					added.append( path )
 	
-	paths.sort()
-	paths_deleted.sort()
+	added.sort()
+	modified.sort()
+	deleted.sort()
 	
-	if deleted:
-		return paths, paths_deleted
-	return paths
+	return added, modified, deleted
 
 def get_log( file, empty=True, multi=False, default='GENERAL' ):
 	
