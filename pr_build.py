@@ -438,8 +438,8 @@ def build_client( patch ):
 			for type in ['server','client']:
 				for p,o in core_archives[options['zip']][type].iteritems():
 					if not o[0]:
-						delete( path='%s-zip' % os.path.join( cb, p ), verbose=options['verbose'] )
-						copy( '%s-zip' % os.path.join( core_path, p ), '%s-zip' % os.path.join( cb, p ), options['verbose'] )
+						delete( path='%s-zip' % os.path.join( cb, os.path.normcase( p ) ), verbose=options['verbose'] )
+						copy( '%s-zip' % os.path.join( core_path, os.path.normcase( p ) ), '%s-zip' % os.path.join( cb, os.path.normcase( p ) ), options['verbose'] )
 		
 		if options['localization']:
 			delete( path=os.path.join( cb, 'localization'), verbose=options['verbose'] )
