@@ -434,6 +434,12 @@ def build_client( patch ):
 				paths.extend(modified)
 				for path in paths:
 					copy( os.path.join( levels_path, path ), os.path.join( lb, path ), options['verbose'] )
+			
+			for type in ['server','client']:
+				for p,o in core_archives[options['zip']][type].iteritems():
+					if not o[0]:
+						delete( path=os.path.join( cb, p ), verbose=options['verbose'] )
+						copy( os.path.join( core_path, p ), os.path.join( cb, p ), options['verbose'] )
 		
 		if options['localization']:
 			delete( path=os.path.join( cb, 'localization'), verbose=options['verbose'] )
