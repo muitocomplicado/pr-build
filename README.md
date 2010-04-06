@@ -47,6 +47,7 @@ Requires Python 2.3+
 		-u --update       do not update the repo
 		-e --export       do not export the repo
 		-a --archive      do not compile archives
+		-m --merge        do not merge already compiled builds
 
 		-p --paths        core and levels repo subpaths additions to defaults (comma separated)
 		                  defaults: trunk, levels

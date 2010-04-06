@@ -52,6 +52,7 @@ Other options:
 	-u --update       do not update the repo
 	-e --export       do not export the repo
 	-a --archive      do not compile archives
+	-m --merge        do not merge already compiled builds
 
 	-p --paths        core and levels repo subpaths additions to defaults (comma separated)
 	                  defaults: trunk, levels
@@ -214,6 +215,7 @@ options = {
 	'export': True,
 	'archive': True,
 	'cleanup': True,
+	'merge': True,
 	
 	'verbose': '',
 	'quiet': ''
@@ -232,9 +234,9 @@ def main(argv=None):
 	try:
 		try:
 			opts, args = getopt.getopt(argv[1:], 
-				"hc:l:o:n:bstkwp:z:x:yiueavq", 
+				"hc:l:o:n:bstkwp:z:x:yiueamvq", 
 				[ "help", "core=", "levels=", "localization=", "number=", "build", "server", "test", "skip", "wait", 
-					"paths=", "zip=", "password=", "python", "installer", "update", "export", "archive", "verbose", "quiet" ])
+					"paths=", "zip=", "password=", "python", "installer", "update", "export", "archive", "merge", "verbose", "quiet" ])
 		except getopt.error, msg:
 			raise Usage(msg)
 		
@@ -281,6 +283,8 @@ def main(argv=None):
 				options['export'] = False
 			if option in ("-a", "--archive"):
 				options['archive'] = False
+			if option in ("-m", "--merge"):
+				options['merge'] = False
 			
 			if option in ("-v", "--verbose"):
 				options['verbose'] = '-v'
@@ -445,18 +449,18 @@ def build_client( patch ):
 			delete( path=os.path.join( cb, 'localization'), verbose=options['verbose'] )
 			export_repo( localization_path, os.path.join( cb, 'localization') )
 		
-	if options['cleanup']:
-		verbose( 'CLEANUP %s' % patch )
-
-		delete( path=os.path.join( cb, 'build_pr.bat' ), verbose=options['verbose'] )
-		delete( path=os.path.join( cb, 'readme', 'assets' ), verbose=options['verbose'] )
-		delete( path=cb, pattern='bst*.md5', verbose=options['verbose'] )
-		delete( path=lb, pattern='assets', recursive=True, verbose=options['verbose'] )
-		delete( path=lb, pattern='server', recursive=True, verbose=options['verbose'] )
-		clean_archives( cb, core_archives[options['zip']]['server'] )
-		clean_archives( cb, core_archives[options['zip']]['client'] )
-		empty_archives( cb, core_revision )
-		clean_atlas( cb )
+		if options['cleanup']:
+			verbose( 'CLEANUP %s' % patch )
+			
+			delete( path=os.path.join( cb, 'build_pr.bat' ), verbose=options['verbose'] )
+			delete( path=os.path.join( cb, 'readme', 'assets' ), verbose=options['verbose'] )
+			delete( path=cb, pattern='bst*.md5', verbose=options['verbose'] )
+			delete( path=lb, pattern='assets', recursive=True, verbose=options['verbose'] )
+			delete( path=lb, pattern='server', recursive=True, verbose=options['verbose'] )
+			clean_archives( cb, core_archives[options['zip']]['server'] )
+			clean_archives( cb, core_archives[options['zip']]['client'] )
+			empty_archives( cb, core_revision )
+			clean_atlas( cb )
 	
 	if options['archive']:
 		verbose( 'ARCHIVE %s' % patch )
@@ -469,7 +473,7 @@ def build_client( patch ):
 		delete_archives( cb, core_archives[options['zip']]['client'] )
 		update_archives( patch )
 	
-	if patch:
+	if options['merge'] and patch:
 		verbose( 'MERGE PATCH %s' % patch )
 		
 		merge( cb, core_build,   options['verbose'] )
@@ -492,46 +496,49 @@ def build_patch( patch ):
 	
 	verbose( 'PATCH BUILD %s' % patch )
 	
-	delete( path=patch_build, verbose=options['verbose'] )
-	merge( path_core_build( patch ),   patch_build,                           options['verbose'] )
-	merge( path_levels_build( patch ), os.path.join( patch_build, 'levels' ), options['verbose'] )
+	if options['merge']:
+		delete( path=patch_build, verbose=options['verbose'] )
+		merge( path_core_build( patch ),   patch_build,                           options['verbose'] )
+		merge( path_levels_build( patch ), os.path.join( patch_build, 'levels' ), options['verbose'] )
 
 def build_server( patch ):
 	
 	verbose( 'SERVER BUILD %s' % patch )
 	
-	delete( path=server_build, verbose=options['verbose'] )
-	merge( core_build,   server_build,                           options['verbose'] )
-	merge( levels_build, os.path.join( server_build, 'levels' ), options['verbose'] )
+	if options['merge']:
+		
+		delete( path=server_build, verbose=options['verbose'] )
+		merge( core_build,   server_build,                           options['verbose'] )
+		merge( levels_build, os.path.join( server_build, 'levels' ), options['verbose'] )
 	
-	verbose( 'SERVER CLEANUP' )
+		verbose( 'SERVER CLEANUP' )
 
-	delete( os.path.join( server_build, 'levels' ), '*client.zip', True, [], options['verbose'] )
-	delete( os.path.join( server_build, 'levels' ), '*.png',       True, [], options['verbose'] )
+		delete( os.path.join( server_build, 'levels' ), '*client.zip', True, [], options['verbose'] )
+		delete( os.path.join( server_build, 'levels' ), '*.png',       True, [], options['verbose'] )
 
-	for p,o in core_archives[options['zip']]['client'].iteritems():
-		delete( path=os.path.join( server_build, '%s.zip' % os.path.normcase( p ) ), verbose=options['verbose'] )
+		for p,o in core_archives[options['zip']]['client'].iteritems():
+			delete( path=os.path.join( server_build, '%s.zip' % os.path.normcase( p ) ), verbose=options['verbose'] )
+			for i in range( 1, patch+1 ):
+				delete( path=os.path.join( server_build, '%s_patch%s.zip' % ( os.path.normcase( p ), i ) ), verbose=options['verbose'] )
+	
+		delete( path=os.path.join( server_build, 'shaders_client_pr.zip' ), verbose=options['verbose'] )
+	
 		for i in range( 1, patch+1 ):
-			delete( path=os.path.join( server_build, '%s_patch%s.zip' % ( os.path.normcase( p ), i ) ), verbose=options['verbose'] )
+			delete( path=os.path.join( server_build, 'shaders_client_pr_patch%s.zip' % i ), verbose=options['verbose'] )
 	
-	delete( path=os.path.join( server_build, 'shaders_client_pr.zip' ), verbose=options['verbose'] )
+		delete( path=os.path.join( server_build, archives_con['client'] ), verbose=options['verbose'] )
+		delete( path=os.path.join( server_build, 'menu', 'external' ), verbose=options['verbose'] )
+		delete( path=os.path.join( server_build, 'readme', 'bf2editor' ), verbose=options['verbose'] )
+		delete( path=os.path.join( server_build, 'readme', 'dotnet' ), verbose=options['verbose'] )
+		delete( path=os.path.join( server_build, 'readme', 'icons' ), verbose=options['verbose'] )
+		delete( path=os.path.join( server_build, 'readme' ), pattern='*.pdf', verbose=options['verbose'] )
+		delete( path=os.path.join( server_build, 'movies' ), verbose=options['verbose'] )
+		delete( path=os.path.join( server_build, '00000000.256' ), verbose=options['verbose'] )
+		delete( path=os.path.join( server_build, 'pr.exe' ), verbose=options['verbose'] )
+		delete( os.path.join( server_build, 'readme' ), '*.txt', False, ['license.txt'], options['verbose'] )
 	
-	for i in range( 1, patch+1 ):
-		delete( path=os.path.join( server_build, 'shaders_client_pr_patch%s.zip' % i ), verbose=options['verbose'] )
-	
-	delete( path=os.path.join( server_build, archives_con['client'] ), verbose=options['verbose'] )
-	delete( path=os.path.join( server_build, 'menu', 'external' ), verbose=options['verbose'] )
-	delete( path=os.path.join( server_build, 'readme', 'bf2editor' ), verbose=options['verbose'] )
-	delete( path=os.path.join( server_build, 'readme', 'dotnet' ), verbose=options['verbose'] )
-	delete( path=os.path.join( server_build, 'readme', 'icons' ), verbose=options['verbose'] )
-	delete( path=os.path.join( server_build, 'readme' ), pattern='*.pdf', verbose=options['verbose'] )
-	delete( path=os.path.join( server_build, 'movies' ), verbose=options['verbose'] )
-	delete( path=os.path.join( server_build, '00000000.256' ), verbose=options['verbose'] )
-	delete( path=os.path.join( server_build, 'pr.exe' ), verbose=options['verbose'] )
-	delete( os.path.join( server_build, 'readme' ), '*.txt', False, ['license.txt'], options['verbose'] )
-	
-	# rename( os.path.join( server_build, 'settings', 'prserverusersettings.con' ), os.path.join( server_build, 'settings', 'usersettings.con' ), options['verbose'] )
-	# os.chmod( os.path.join( server_build, 'settings', 'usersettings.con' ), stat.S_IREAD )
+		# rename( os.path.join( server_build, 'settings', 'prserverusersettings.con' ), os.path.join( server_build, 'settings', 'usersettings.con' ), options['verbose'] )
+		# os.chmod( os.path.join( server_build, 'settings', 'usersettings.con' ), stat.S_IREAD )
 	
 def server_installer( current, test ):
 	
