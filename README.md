@@ -39,7 +39,7 @@ Requires Python 2.3+
 
 		-k --skip         skip to the last patch (must have all other builds ready)
 		-w --wait         pauses after each major subversion command
-		-z --zip          zip structure (default v2)
+		-z --zip          zip structure (default v3)
 		-x --password     defines the password for a passworded installer
 
 		-y --python       do not compile python

@@ -44,7 +44,7 @@ Other options:
 
 	-k --skip         skip to the last patch (must have all other builds ready)
 	-w --wait         pauses after each major subversion command
-	-z --zip          zip structure (default v2)
+	-z --zip          zip structure (default v3)
 	-x --password     defines the password for a passworded installer
 
 	-y --python       do not compile python
@@ -103,6 +103,20 @@ filter_archives = {
 		'objects/vehicles_client': ['*.con', '*.tweak', '*.collisionmesh'],
 		'objects/water_client': ['*.con', '*.tweak', '*.collisionmesh'],
 		'objects/weapons_client': ['*.con', '*.tweak', '*.collisionmesh']
+	},
+	'v3': {
+		'objects/common_client': ['*.con', '*.tweak', '*.collisionmesh'],
+		'objects/dynamicobjects_client': ['*.con', '*.tweak', '*.collisionmesh'],
+		'objects/effects_client': ['*.con', '*.tweak', '*.collisionmesh'],
+		'objects/kits_client': ['*.con', '*.tweak', '*.collisionmesh'],
+		'objects/miscobjects_client': ['*.con', '*.tweak', '*.collisionmesh'],
+		'objects/roads_client': ['*.con', '*.tweak', '*.collisionmesh'],
+		'objects/soldiers_client': ['*.con', '*.tweak', '*.collisionmesh'],
+		'objects/staticobjects_client': ['*.con', '*.tweak', '*.collisionmesh'],
+		'objects/vegitation_client': ['*.con', '*.tweak', '*.collisionmesh'],
+		'objects/vehicles_client': ['*.con', '*.tweak', '*.collisionmesh'],
+		'objects/water_client': ['*.con', '*.tweak', '*.collisionmesh'],
+		'objects/weapons_client': ['*.con', '*.tweak', '*.collisionmesh']
 	}
 }
 
@@ -119,7 +133,8 @@ old_archives = {
 			]
 		}
 	},
-	'v2': {}
+	'v2': {},
+	'v3': {}
 }
 
 archives_con = {
@@ -188,7 +203,42 @@ core_archives = {
 			'inits/factions_taliban': ( '', False ),
 			'inits/factions_us': ( '', False ),
 			'inits/factions_usa': ( '', False ),
-			
+		}
+	},
+	'v3': {
+		'client': {
+			'common_client': ( 'Common', False ),
+			'menu/fonts_client': ( 'Fonts', False ),
+			'menu/menu_client': ( 'Menu', False ),
+			'shaders_client': ( 'Shaders', False ),
+			'objects/common_client': ( 'Objects', True ),
+			'objects/dynamicobjects_client': ( 'Objects', True ),
+			'objects/effects_client': ( 'Objects', True ),
+			'objects/kits_client': ( 'Objects', True ),
+			'objects/miscobjects_client': ( 'Objects', True ),
+			'objects/roads_client': ( 'Objects', True ),
+			'objects/soldiers_client': ( 'Objects', True ),
+			'objects/staticobjects_client': ( 'Objects', True ),
+			'objects/vegitation_client': ( 'Objects', True ),
+			'objects/vehicles_client': ( 'Objects', True ),
+			'objects/water_client': ( 'Objects', True ),
+			'objects/weapons_client': ( 'Objects', True )
+		},
+		'server': { 
+			'common_server': ( 'Common', False ),
+			'menu/menu_server': ( 'Menu', False ), 
+			'objects/common_server': ( 'Objects', True ),
+			'objects/effects_server': ( 'Objects', True ),
+			'objects/kits_server': ( 'Objects', True ),
+			'objects/miscobjects_server': ( 'Objects', True ),
+			'objects/roads_server': ( 'Objects', True ),
+			'objects/soldiers_server': ( 'Objects', True ),
+			'objects/staticobjects_server': ( 'Objects', True ),
+			'objects/vegitation_server': ( 'Objects', True ),
+			'objects/vehicles_server': ( 'Objects', True ),
+			'objects/water_server': ( 'Objects', True ),
+			'objects/weapons_server': ( 'Objects', True ),
+			'faction_init': ( '', False ),
 		}
 	}
 }
@@ -205,7 +255,7 @@ options = {
 	'test': False,
 	'skip': False,
 	'wait': False,
-	'zip': 'v2',
+	'zip': 'v3',
 	'password': '',
 	'paths': [ 'trunk', 'levels' ],
 	
