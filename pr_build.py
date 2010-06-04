@@ -238,7 +238,7 @@ core_archives = {
 			'objects/vehicles_server': ( 'Objects', True ),
 			'objects/water_server': ( 'Objects', True ),
 			'objects/weapons_server': ( 'Objects', True ),
-			'faction_init': ( '', False ),
+			'faction_inits': ( '', False ),
 		}
 	}
 }
