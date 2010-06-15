@@ -642,7 +642,7 @@ def build_patch_bat( patch, deleted ):
 			
 			f.write( 'ECHO UPDATING %s >> %s%s' % ( zz, pl, nl ) )
 			f.write( '7za.exe d "..\\%s" -y -i@%s%s' % ( zz, l, nl ) )
-			f.write( 'if not %errorlevel% == 0 (goto error)%s' % ( nl ) )
+			f.write( 'if not %errorlevel% == 0 (goto error)' + nl )
 	
 	f.write( '%sECHO PATCH COMPLETED >> %s%s' % ( nl, pl, nl ) )
 	f.write( 'goto quit%s' % ( nl ) )
