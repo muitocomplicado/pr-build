@@ -210,7 +210,7 @@ core_archives = {
 			'common_client': ( 'Common', False ),
 			'menu/fonts_client': ( 'Fonts', False ),
 			'menu/menu_client': ( 'Menu', False ),
-			'shaders_client': ( 'Shaders', False ),
+			'shaders_client': ( '', False ),
 			'objects/common_client': ( 'Objects', True ),
 			'objects/dynamicobjects_client': ( 'Objects', True ),
 			'objects/effects_client': ( 'Objects', True ),
@@ -518,8 +518,7 @@ def build_client( patch ):
 		
 		build_archives( cb, core_archives[options['zip']]['server'], sufix )
 		build_archives( cb, core_archives[options['zip']]['client'], sufix )
-		rename( os.path.join( cb, 'shaders_client%s.zip' % sufix ), 
-					os.path.join( cb, 'shaders_client_pr%s.zip' % sufix ), options['verbose'] )
+		rename( os.path.join( cb, 'shaders_client.zip' ), os.path.join( cb, 'shaders_client_pr.zip' ), options['verbose'] )
 		delete_archives( cb, core_archives[options['zip']]['server'] )
 		delete_archives( cb, core_archives[options['zip']]['client'] )
 		update_archives( patch )
@@ -680,10 +679,6 @@ def build_server( patch ):
 				delete( path=os.path.join( server_build, '%s_patch%s.zip' % ( os.path.normcase( p ), i ) ), verbose=options['verbose'] )
 	
 		delete( path=os.path.join( server_build, 'shaders_client_pr.zip' ), verbose=options['verbose'] )
-	
-		for i in range( 1, patch+1 ):
-			delete( path=os.path.join( server_build, 'shaders_client_pr_patch%s.zip' % i ), verbose=options['verbose'] )
-	
 		delete( path=os.path.join( server_build, archives_con['client'] ), verbose=options['verbose'] )
 		delete( path=os.path.join( server_build, 'menu', 'external' ), verbose=options['verbose'] )
 		delete( path=os.path.join( server_build, 'readme', 'bf2editor' ), verbose=options['verbose'] )
