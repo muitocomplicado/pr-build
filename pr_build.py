@@ -773,10 +773,15 @@ def client_installer( type, script, current, previous=None, test=False):
 		
 		output   = os.path.join( installer_path, 'Output', 'setup.exe' )
 		
-		if previous:
-			filename = os.path.join( builds_path, 'pr_%s_to_%s_%s_setup.exe' % ( previous, current, type ) )
+		if test:
+			sufix = 'test_'
 		else:
-			filename = os.path.join( builds_path, 'pr_%s_%s_setup.exe' % ( current, type ) )
+			sufix = ''
+		
+		if previous:
+			filename = os.path.join( builds_path, 'pr_%s_to_%s_%s_%ssetup.exe' % ( previous, current, type, sufix ) )
+		else:
+			filename = os.path.join( builds_path, 'pr_%s_%s_%ssetup.exe' % ( current, type, sufix ) )
 		
 		delete( path=filename, verbose=options['verbose'] )
 		copy( output, filename, options['verbose'] )
