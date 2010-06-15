@@ -708,7 +708,12 @@ def server_installer( current, test ):
 	else:
 		server_build_renamed = os.path.join( builds_path, 'pr' )
 	
-	filename = os.path.join( builds_path, 'pr_%s_server.zip' % current )
+	if test:
+		sufix = '_test'
+	else:
+		sufix = ''
+	
+	filename = os.path.join( builds_path, 'pr_%s%s_server.zip' % ( current, sufix ) )
 	
 	delete( path=server_build_renamed, verbose=options['verbose'] )
 	
