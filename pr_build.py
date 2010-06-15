@@ -560,7 +560,7 @@ def build_patch_bat( patch, deleted ):
 	f.write( 'del /F /Q %s%s' % ( pe, nl ) )
 	f.write( 'ECHO. > %s%s' % ( pl, nl ) )
 	
-	regex = re.compile('^.*(python|assets)/.*$', re.I)
+	regex = re.compile('^.*(python|assets)%s.*$' % os.sep, re.I)
 	
 	zips = {}
 	for path in deleted:
@@ -582,26 +582,26 @@ def build_patch_bat( patch, deleted ):
 		else:
 			
 			z = path[0:path.find('-zip')]
-			p = path.replace( z + '-zip/', '' )
+			p = path.replace( z + '-zip' + os.sep, '' )
 			
 			if z in core_archives[options['zip']]['client']:
 				if not core_archives[options['zip']]['client'][z][0]:
 					continue
 				if core_archives[options['zip']]['client'][z][1]:
-					r = z.split('/')[-1]
+					r = z.split(os.sep)[-1]
 					r = r.replace('_client','')
-					p = '%s/%s' % ( r, p )
+					p = os.path.join( r, p )
 			
 			if z in core_archives[options['zip']]['server']:
 				if not core_archives[options['zip']]['server'][z][0]:
 					continue
 				if core_archives[options['zip']]['server'][z][1]:
-					r = z.split('/')[-1]
+					r = z.split(os.sep)[-1]
 					r = r.replace('_server','')
-					p = '%s/%s' % ( r, p )
+					p = os.path.join( r, p )
 			
-			if p.split('/')[-1].find('.') == -1:
-				p += '/'
+			if p.split(os.sep)[-1].find('.') == -1:
+				p += os.sep
 			
 			if z not in zips:
 				zips[z] = []
@@ -609,7 +609,7 @@ def build_patch_bat( patch, deleted ):
 	
 	for z,ps in zips.iteritems():
 		
-		l = z.replace('/','-') + '.txt'
+		l = z.replace( os.sep, '-' ) + '.txt'
 		
 		t = open( os.path.join( pb, l ), 'w' )
 		for p in ps:
@@ -619,9 +619,7 @@ def build_patch_bat( patch, deleted ):
 		for a in range(0,patch):
 			
 			if a:
-				
 				zz = '%s_patch%s.zip' % (z, a)
-				zz = zz.replace('/', '\\')
 				
 				exists = False
 				for b in range(0,a+1):
@@ -636,9 +634,9 @@ def build_patch_bat( patch, deleted ):
 					continue
 			
 			else:
-				
 				zz = '%s.zip' % z
-				zz = zz.replace('/', '\\')
+			
+			zz = zz.replace('/', '\\')
 			
 			f.write( 'ECHO UPDATING %s >> %s%s' % ( zz, pl, nl ) )
 			f.write( '7za.exe d "..\\%s" -y -i@%s%s' % ( zz, l, nl ) )
