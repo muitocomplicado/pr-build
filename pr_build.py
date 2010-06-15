@@ -479,6 +479,7 @@ def build_client( patch ):
 				paths.extend(modified)
 				for path in paths:
 					copy( os.path.join( core_path, path ), os.path.join( cb, path ), options['verbose'] )
+				build_patch_bat( patch, deleted )
 			
 			if levels_lrevision <= int( levels_revision ):
 				levels_log = log_repo( levels_path, levels_lrevision, levels_revision )
@@ -541,6 +542,115 @@ def build_python( patch ):
 	if patch:
 		delete( path=os.path.join( path_core_build( patch ), 'python', 'game' ), verbose=options['verbose'] )
 		copy( os.path.join( core_build, 'python', 'game' ), os.path.join( path_core_build( patch ), 'python', 'game' ), options['verbose'] )
+
+def build_patch_bat( patch, deleted ):
+	
+	verbose( 'PATCH BAT BUILD %s' % patch )
+	
+	nl = '\r\n'
+	pl = '..\\patch.log'
+	pe = '..\\patch_error.dat'
+	
+	pb = os.path.join( path_core_build( patch ), 'patch' )
+	
+	copy( os.path.join( core_path, 'readme', 'assets', '7za.exe' ), os.path.join( pb, '7za.exe' ) )
+	
+	f = open( os.path.join( pb, 'patch.bat' ), 'w' )
+	f.write( 'del /F /Q %s%s' % ( pl, nl ) )
+	f.write( 'del /F /Q %s%s' % ( pe, nl ) )
+	f.write( 'ECHO. > %s%s' % ( pl, nl ) )
+	
+	regex = re.compile('^.*(python|assets)/.*$', re.I)
+	
+	zips = {}
+	for path in deleted:
+		
+		if regex.match(path):
+			continue
+		
+		if path.find('-zip') == -1:
+			
+			w = path.replace('/','\\')
+			
+			f.write( 'ECHO DELETING %s >> %s%s' % ( w, pl, nl ) )
+			
+			if path.find('.') == -1:
+				f.write( 'rmdir /S /Q "..\\%s"%s' % ( w, nl ) )
+			else:
+				f.write( 'del /F /Q "..\\%s"%s' % ( w, nl ) )
+			
+		else:
+			
+			z = path[0:path.find('-zip')]
+			p = path.replace( z + '-zip/', '' )
+			
+			if z in core_archives[options['zip']]['client']:
+				if not core_archives[options['zip']]['client'][z][0]:
+					continue
+				if core_archives[options['zip']]['client'][z][1]:
+					r = z.split('/')[-1]
+					r = r.replace('_client','')
+					p = '%s/%s' % ( r, p )
+			
+			if z in core_archives[options['zip']]['server']:
+				if not core_archives[options['zip']]['server'][z][0]:
+					continue
+				if core_archives[options['zip']]['server'][z][1]:
+					r = z.split('/')[-1]
+					r = r.replace('_server','')
+					p = '%s/%s' % ( r, p )
+			
+			if p.split('/')[-1].find('.') == -1:
+				p += '/'
+			
+			if z not in zips:
+				zips[z] = []
+			zips[z].append(p)
+	
+	for z,ps in zips.iteritems():
+		
+		l = z.replace('/','-') + '.txt'
+		
+		t = open( os.path.join( pb, l ), 'w' )
+		for p in ps:
+			t.write(p + nl)
+		t.close()
+		
+		for a in range(0,patch):
+			
+			if a:
+				
+				zz = '%s_patch%s.zip' % (z, a)
+				zz = zz.replace('/', '\\')
+				
+				exists = False
+				for b in range(0,a+1):
+					if os.path.exists( os.path.join( path_core_build(b), zz ) ):
+						exists = True
+						break
+					if b and os.path.exists( os.path.join( path_core_build(b), '%s-zip' % z ) ):
+						exists = True
+						break
+				
+				if not exists:
+					continue
+			
+			else:
+				
+				zz = '%s.zip' % z
+				zz = zz.replace('/', '\\')
+			
+			f.write( 'ECHO UPDATING %s >> %s%s' % ( zz, pl, nl ) )
+			f.write( '7za.exe d "..\\%s" -y -i@%s%s' % ( zz, l, nl ) )
+			f.write( 'if not %errorlevel% == 0 (goto error)%s' % ( nl ) )
+	
+	f.write( '%sECHO PATCH COMPLETED >> %s%s' % ( nl, pl, nl ) )
+	f.write( 'goto quit%s' % ( nl ) )
+	f.write( '%s:error%s%s' % ( nl, nl, nl ) )
+	f.write( 'ECHO ERROR - PATCH FAILED >> %s%s' % ( pl, nl ) )
+	f.write( 'ECHO ERROR - PATCH FAILED > %s%s' % ( pe, nl ) )
+	f.write( '%s:quit%s%s' % ( nl, nl, nl ) )
+	f.close()
 
 def build_patch( patch ):
 	
