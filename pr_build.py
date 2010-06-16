@@ -528,6 +528,7 @@ def build_client( patch ):
 		
 		merge( cb, core_build,   options['verbose'] )
 		merge( lb, levels_build, options['verbose'] )
+		run_patch_bat( core_build )
 		
 def build_python( patch ):
 	
@@ -541,6 +542,32 @@ def build_python( patch ):
 	if patch:
 		delete( path=os.path.join( path_core_build( patch ), 'python', 'game' ), verbose=options['verbose'] )
 		copy( os.path.join( core_build, 'python', 'game' ), os.path.join( path_core_build( patch ), 'python', 'game' ), options['verbose'] )
+
+def run_patch_bat( path ):
+
+	verbose( 'PATCH BAT RUN' )
+	
+	if not os.path.exists( os.path.join( path, 'patch', 'patch.bat' ) ):
+		return
+	
+	root = os.getcwd()
+	
+	os.chdir( os.path.join( path, 'patch' ) )
+	if os.name not in ['posix','mac']:
+		if options['quiet']:
+			q = '> nul'
+		else:
+			q = ''
+		os.system( '"patch.bat" %s' % ( q ) )
+	
+	os.chdir( root )
+	
+	if os.path.exists( path, 'patch_error.dat' ):
+		sys.exit( 'Patch bat failed to run, see patch.log' )
+	else:
+		delete( path=os.path.join( path, 'patch.log' ), verbose=options['verbose'] )
+		delete( path=os.path.join( path, 'patch_error.dat' ), verbose=options['verbose'] )
+		delete( path=os.path.join( path, 'patch' ), verbose=options['verbose'] )
 
 def build_patch_bat( patch, deleted ):
 	
