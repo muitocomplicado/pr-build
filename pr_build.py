@@ -562,7 +562,7 @@ def run_patch_bat( path ):
 	
 	os.chdir( root )
 	
-	if os.path.exists( path, 'patch_error.dat' ):
+	if os.path.exists( os.path.join( path, 'patch_error.dat' ) ):
 		sys.exit( 'Patch bat failed to run, see patch.log' )
 	else:
 		delete( path=os.path.join( path, 'patch.log' ), verbose=options['verbose'] )
