@@ -607,14 +607,17 @@ def build_patch_bat( patch, deleted ):
 			
 		else:
 			
-			z = path[0:path.find('-zip')]
-			p = path.replace( z + '-zip' + os.sep, '' )
+			z = path[0:path.find('-zip')].replace(os.sep, '/')
+			p = path.replace( path[0:path.find('-zip')] + '-zip' + os.sep, '' )
+			
+			if z not in core_archives[options['zip']]['client'] and z not in core_archives[options['zip']]['server']:
+				continue
 			
 			if z in core_archives[options['zip']]['client']:
 				if not core_archives[options['zip']]['client'][z][0]:
 					continue
 				if core_archives[options['zip']]['client'][z][1]:
-					r = z.split(os.sep)[-1]
+					r = z.split('/')[-1]
 					r = r.replace('_client','')
 					p = os.path.join( r, p )
 			
@@ -622,12 +625,14 @@ def build_patch_bat( patch, deleted ):
 				if not core_archives[options['zip']]['server'][z][0]:
 					continue
 				if core_archives[options['zip']]['server'][z][1]:
-					r = z.split(os.sep)[-1]
+					r = z.split('/')[-1]
 					r = r.replace('_server','')
 					p = os.path.join( r, p )
 			
 			if p.split(os.sep)[-1].find('.') == -1:
 				p += os.sep
+			
+			z = z.replace('/',os.sep)
 			
 			if z not in zips:
 				zips[z] = []
