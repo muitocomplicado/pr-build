@@ -117,7 +117,7 @@ def get_log( file, empty=True, multi=False, default='GENERAL' ):
 		m = ''
 		
 		try:
-			m = str( log.getElementsByTagName('msg')[0].firstChild.nodeValue )
+			m = log.getElementsByTagName('msg')[0].firstChild.nodeValue
 		except: pass
 		
 		m = m.strip()
@@ -125,14 +125,14 @@ def get_log( file, empty=True, multi=False, default='GENERAL' ):
 		if not empty and len( m ) == 0:
 			continue
 		
-		d = str( log.getElementsByTagName('date')[0].firstChild.nodeValue )
+		d = log.getElementsByTagName('date')[0].firstChild.nodeValue
 		d = d[0:10]
 	
-		a = str( log.getElementsByTagName('author')[0].firstChild.nodeValue )
+		a = log.getElementsByTagName('author')[0].firstChild.nodeValue
 		
 		p = []
 		for path in log.getElementsByTagName('path'):
-			p.append( ( str( path.getAttribute('action') ), str( path.firstChild.nodeValue ) ) )
+			p.append( ( path.getAttribute('action'), path.firstChild.nodeValue ) )
 		
 		c = default.upper()
 		
