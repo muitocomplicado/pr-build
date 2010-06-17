@@ -115,11 +115,11 @@ def get_log( file, empty=True, multi=False, default='GENERAL' ):
 	
 	for log in xmldoc.getElementsByTagName('logentry'):
 		
-		r = str( log.getAttribute('revision') )
+		r = log.getAttribute('revision').encode('utf-8')
 		m = ''
 		
 		try:
-			m = log.getElementsByTagName('msg')[0].firstChild.nodeValue
+			m = log.getElementsByTagName('msg')[0].firstChild.nodeValue.encode('utf-8')
 		except: pass
 		
 		m = m.strip()
@@ -127,14 +127,14 @@ def get_log( file, empty=True, multi=False, default='GENERAL' ):
 		if not empty and len( m ) == 0:
 			continue
 		
-		d = log.getElementsByTagName('date')[0].firstChild.nodeValue
+		d = log.getElementsByTagName('date')[0].firstChild.nodeValue.encode('utf-8')
 		d = d[0:10]
 	
-		a = log.getElementsByTagName('author')[0].firstChild.nodeValue
+		a = log.getElementsByTagName('author')[0].firstChild.nodeValue.encode('utf-8')
 		
 		p = []
 		for path in log.getElementsByTagName('path'):
-			p.append( ( path.getAttribute('action'), path.firstChild.nodeValue ) )
+			p.append( ( path.getAttribute('action').encode('utf-8'), path.firstChild.nodeValue.encode('utf-8') ) )
 		
 		c = default.upper()
 		
