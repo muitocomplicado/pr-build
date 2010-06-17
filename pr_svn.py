@@ -109,8 +109,10 @@ def get_log( file, empty=True, multi=False, default='GENERAL' ):
 	
 	logs = []
 	
-	xmldoc = minidom.parse( file )
-
+	xmldoc = minidom.parse(file)
+	data = xmldoc.toxml( 'utf-8' )
+	xmldoc = minidom.parseString( data )
+	
 	for log in xmldoc.getElementsByTagName('logentry'):
 		
 		r = str( log.getAttribute('revision') )
