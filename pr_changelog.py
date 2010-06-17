@@ -236,6 +236,9 @@ def by_category( logs, output='text' ):
 	groups = logs_grouped.keys()
 	groups.sort(compare)
 	
+	if len( groups ) == 0:
+		return
+	
 	for g in groups:
 	
 		msg = category( g.upper(), output )
@@ -252,6 +255,10 @@ def by_date( logs, output='text' ):
 	groups = logs_grouped.keys()
 	groups.sort(compare)
 	groups.reverse()
+	
+	if len( groups ) == 0:
+		return
+	
 	groups.pop()
 	
 	for g in groups:
@@ -270,6 +277,9 @@ def by_author( logs, output='text' ):
 	logs_grouped = grouped( logs, 'author' )
 	groups = logs_grouped.keys()
 	groups.sort(compare)
+	
+	if len( groups ) == 0:
+		return
 	
 	for g in groups:
 		
