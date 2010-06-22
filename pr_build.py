@@ -785,6 +785,8 @@ def client_installer( type, script, current, previous=None, test=False):
 		line = line.replace( 'pr_password', password )
 		line = line.replace( 'pr_encryption', encryption )
 		
+		line = line.replace( 'dot_version_number', chunked(current,1).join('.') )
+		
 		if previous:
 			line = line.replace( 'old_version_number', previous )
 		
@@ -1053,6 +1055,9 @@ def verbose( text, prefix=True ):
 			print '--- ' + text
 		else:
 			print text
+
+def chunked(s, n): 
+	return [s[i:i+n:n] for i in xrange(0, len(s), n)]
 
 def zip( source, destination, folder=False, filters='' ):
 	
