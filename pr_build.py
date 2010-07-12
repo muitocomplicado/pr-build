@@ -785,7 +785,7 @@ def client_installer( type, script, current, previous=None, test=False):
 		line = line.replace( 'pr_password', password )
 		line = line.replace( 'pr_encryption', encryption )
 		
-		line = line.replace( 'dot_version_number', chunked(current,1).join('.') )
+		line = line.replace( 'dot_version_number', '.'.join(chunked(current,1)) )
 		
 		if previous:
 			line = line.replace( 'old_version_number', previous )
