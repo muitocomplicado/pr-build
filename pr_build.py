@@ -55,7 +55,7 @@ Other options:
 	-m --merge        do not merge already compiled builds
 
 	-p --paths        core and levels repo subpaths additions to defaults (comma separated)
-	                  defaults: trunk, levels
+	                  defaults: trunk
 
 	-v --verbose      run it verbosely
 	-q --quiet        run it quietly
@@ -257,7 +257,7 @@ options = {
 	'wait': False,
 	'zip': 'v3',
 	'password': '',
-	'paths': [ 'trunk', 'levels' ],
+	'paths': [ 'trunk' ],
 	
 	'python': True,
 	'installer': True,
@@ -464,7 +464,7 @@ def build_client( patch ):
 		if not patch:
 			
 			export_repo( core_path, cb )
-			export_repo( levels_path, lb )
+			export_repo( levels_path, os.path.join( lb, 'levels') )
 		
 		else:
 			
@@ -688,8 +688,8 @@ def build_patch( patch ):
 	
 	if options['merge']:
 		delete( path=patch_build, verbose=options['verbose'] )
-		merge( path_core_build( patch ),   patch_build,                           options['verbose'] )
-		merge( path_levels_build( patch ), os.path.join( patch_build, 'levels' ), options['verbose'] )
+		merge( path_core_build( patch ),   patch_build, options['verbose'] )
+		merge( path_levels_build( patch ), patch_build, options['verbose'] )
 
 def build_server( patch ):
 	
