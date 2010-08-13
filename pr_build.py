@@ -55,7 +55,7 @@ Other options:
 	-m --merge        do not merge already compiled builds
 
 	-p --paths        core and levels repo subpaths additions to defaults (comma separated)
-	                  defaults: trunk
+	                  defaults: trunk, levels
 
 	-v --verbose      run it verbosely
 	-q --quiet        run it quietly
@@ -254,7 +254,7 @@ options = {
 	'wait': False,
 	'zip': 'v3',
 	'password': '',
-	'paths': [ 'trunk' ],
+	'paths': [ 'trunk', 'levels' ],
 	
 	'python': True,
 	'installer': True,
@@ -461,7 +461,7 @@ def build_client( patch ):
 		if not patch:
 			
 			export_repo( core_path, cb )
-			export_repo( levels_path, os.path.join( lb, 'levels') )
+			export_repo( levels_path, lb )
 		
 		else:
 			
@@ -686,7 +686,7 @@ def build_patch( patch ):
 	if options['merge']:
 		delete( path=patch_build, verbose=options['verbose'] )
 		merge( path_core_build( patch ),   patch_build, options['verbose'] )
-		merge( path_levels_build( patch ), patch_build, options['verbose'] )
+		merge( path_levels_build( patch ), os.path.join( patch_build, 'levels' ), options['verbose'] )
 
 def build_server( patch ):
 	
@@ -695,7 +695,7 @@ def build_server( patch ):
 	if options['merge']:
 		
 		delete( path=server_build, verbose=options['verbose'] )
-		merge( core_build,   server_build,                           options['verbose'] )
+		merge( core_build,   server_build, options['verbose'] )
 		merge( levels_build, os.path.join( server_build, 'levels' ), options['verbose'] )
 	
 		verbose( 'SERVER CLEANUP' )
@@ -756,9 +756,17 @@ def full_installer( current, test ):
 	
 	verbose( 'Generating Part 1' )
 	
-	for path in [ core_build, levels_build ]:
+	paths = { 
+		core_build: '', 
+		levels_build: 'levels',
+	}
+	
+	for path,sub in paths.items():
+		
 		for root, dirs, files in os.walk( path, topdown=False ):
+			
 			for file in files:
+				
 				s = os.path.size( os.path.join( root, file ) )
 				if size + s > 2 * ( 10 ** 9 ):
 					part += 1
@@ -766,10 +774,11 @@ def full_installer( current, test ):
 					verbose( 'Generating Part %s' % part )
 				
 				size += s
-				sub = root.replace( path, '' )
-				sub = sub.strip(os.sep)
 				
-				copy( os.path.join( root, file ), os.path.join( '%s%s' % ( full_build, part ), sub, file ) )
+				sub_path = root.replace( path, '' )
+				sub_path = sub_path.strip(os.sep)
+				sub_path = os.path.join( sub, sub_path, file )
+				copy( os.path.join( root, file ), os.path.join( '%s%s' % ( full_build, part ), sub_path ) )
 	
 	for p in range( 1, part+1 ):
 		client_installer( 'full_part%sof%s' % ( p, part ), os.path.join( installer_path, 'pr_full%s_base.iss' % p ), current, None, test )
