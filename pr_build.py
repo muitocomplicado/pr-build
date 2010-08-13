@@ -762,38 +762,51 @@ def full_installer( current, test ):
 		( levels_build, 'levels' ),
 	)
 	
+	done = []
 	total = 0
+	count = 0
+	
 	for p in paths:
 		path,sub = p
 		
 		for root, dirs, files in os.walk( path, topdown=False ):
 			for file in files:
 				total += os.path.getsize(os.path.join(root,file))
+				count += 1
 	
-	limit = int( total / 3.0 )
+	limit = int( total / 3.0 ) + 1000000
 	if limit > 2 * ( 10 ** 9 ):
 		limit = 2 * ( 10 ** 9 )
 	
-	for p in paths:
-		path,sub = p
+	while len( done ) < count:
 		
-		for root, dirs, files in os.walk( path, topdown=False ):
+		for p in paths:
+			path,sub = p
+		
+			for root, dirs, files in os.walk( path, topdown=False ):
 			
-			for file in files:
+				for file in files:
+					
+					full_path = os.path.join( root, file )
+					
+					s = os.path.getsize( full_path )
+					if size + s > limit:
+						continue
 				
-				s = os.path.getsize( os.path.join( root, file ) )
-				if size + s > limit:
-					part += 1
-					size = 0
-					verbose( 'Generating Part %s' % part )
-					delete( path=os.path.join( '%s%s' % ( full_build, part ) ), verbose=options['verbose'] )
+					size += s
 				
-				size += s
-				
-				sub_path = root.replace( path, '' )
-				sub_path = sub_path.strip(os.sep)
-				sub_path = os.path.join( sub, sub_path, file )
-				copy( os.path.join( root, file ), os.path.join( '%s%s' % ( full_build, part ), sub_path ) )
+					sub_path = root.replace( path, '' )
+					sub_path = sub_path.strip(os.sep)
+					sub_path = os.path.join( sub, sub_path, file )
+					copy( full_path, os.path.join( '%s%s' % ( full_build, part ), sub_path ) )
+					done.append( full_path )
+		
+		if len( done ) < count:
+			
+			part += 1
+			size = 0
+			verbose( 'Generating Part %s' % part )
+			delete( path=os.path.join( '%s%s' % ( full_build, part ) ), verbose=options['verbose'] )
 	
 	for p in range( 1, part+1 ):
 		client_installer( 'full_part%sof%s' % ( p, part ), os.path.join( installer_path, 'pr_full%s_base.iss' % p ), current, None, test )
