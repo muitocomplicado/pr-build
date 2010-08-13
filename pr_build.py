@@ -812,7 +812,7 @@ def full_installer( current, test ):
 	
 	for p in range( 1, part+1 ):
 		client_installer( 'full_part%sof%s' % ( p, part ), os.path.join( installer_path, 'pr_full%s_base.iss' % p ), current, None, test )
-		delete( path=os.path.join( '%s%s' % ( full_build, part ) ), verbose=options['verbose'] )
+		delete( path=os.path.join( '%s%s' % ( full_build, p ) ), verbose=options['verbose'] )
 
 def patch_installer( current, previous, test ):
 	
