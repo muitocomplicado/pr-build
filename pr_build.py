@@ -375,6 +375,8 @@ def main(argv=None):
 			else:
 				last_num = int( num )
 		
+		options['patch'] = len( options['core'] )
+		
 		if options['build']:
 			
 			if options['skip']:
@@ -757,7 +759,7 @@ def core_installer( current, test ):
 	
 	verbose( 'CORE INSTALLER %s TEST %s' % ( current, test ) )
 	
-	for p in range( 0, options['patch'] ):
+	for p in range( 0, len( options['core'] ) ):
 		os.makedirs( path_objects_build(p) )
 		if os.path.exists( os.path.join( path_core_build(p), 'objects' ) ):
 			copy( os.path.join( path_core_build(p), 'objects' ), os.path.join( path_objects_build(p), 'objects' ) ) 
@@ -766,7 +768,7 @@ def core_installer( current, test ):
 	client_installer( 'full_part1of3', core_installer_path, current, None, test )
 	client_installer( 'full_part2of3', objects_installer_path, current, None, test )
 	
-	for p in range( 0, options['patch'] ):
+	for p in range( 0, len( options['core'] ) ):
 		if os.path.exists( os.path.join( path_objects_build(p), 'objects' ) ):
 			copy( os.path.join( path_objects_build(p), 'objects' ), os.path.join( path_core_build(p), 'objects' ) )
 		delete( path_objects_build(p) )
