@@ -70,19 +70,22 @@ logs_path      = os.path.join( root_path, 'logs' )
 
 core_build     = os.path.join( builds_path, 'full1' )
 levels_build   = os.path.join( builds_path, 'full2' )
+objects_build  = os.path.join( builds_path, 'full3' )
 server_build   = os.path.join( builds_path, 'server' )
 patch_build    = os.path.join( builds_path, 'patch' )
 
-core_build_patch   = os.path.join( builds_path, 'full1_patch' )
-levels_build_patch = os.path.join( builds_path, 'full2_patch' )
+core_build_patch    = os.path.join( builds_path, 'full1_patch' )
+levels_build_patch  = os.path.join( builds_path, 'full2_patch' )
+objects_build_patch = os.path.join( builds_path, 'full3_patch' )
 
 exec_7zip  = 'C:\\repos\\core\\readme\\assets\\7za.exe'
 exec_inno  = 'C:\\Program Files (x86)\\Inno Setup 5\\Compil32.exe'
 
-installer_path        = os.path.join( core_path, 'readme', 'assets', 'builds', 'installer' )
-core_installer_path   = os.path.join( installer_path, 'pr_full1_base.iss' )
-levels_installer_path = os.path.join( installer_path, 'pr_full2_base.iss' )
-patch_installer_path  = os.path.join( installer_path, 'pr_patch_base.iss' )
+installer_path         = os.path.join( core_path, 'readme', 'assets', 'builds', 'installer' )
+core_installer_path    = os.path.join( installer_path, 'pr_full1_base.iss' )
+levels_installer_path  = os.path.join( installer_path, 'pr_full2_base.iss' )
+objects_installer_path = os.path.join( installer_path, 'pr_full3_base.iss' )
+patch_installer_path   = os.path.join( installer_path, 'pr_patch_base.iss' )
 
 localization_path = os.path.join( core_path, 'localization' )
 
@@ -753,12 +756,25 @@ def server_installer( current, test ):
 def core_installer( current, test ):
 	
 	verbose( 'CORE INSTALLER %s TEST %s' % ( current, test ) )
-	client_installer( 'full_part1of2', core_installer_path, current, None, test )
+	
+	for p in range( 0, options['patch'] ):
+		os.makedirs( path_objects_build(p) )
+		if os.path.exists( os.path.join( path_core_build(p), 'objects' ) ):
+			copy( os.path.join( path_core_build(p), 'objects' ), os.path.join( path_objects_build(p), 'objects' ) ) 
+			delete( os.path.join( path_core_build(p), 'objects' ) )
+	
+	client_installer( 'full_part1of3', core_installer_path, current, None, test )
+	client_installer( 'full_part2of3', objects_installer_path, current, None, test )
+	
+	for p in range( 0, options['patch'] ):
+		if os.path.exists( os.path.join( path_objects_build(p), 'objects' ) ):
+			copy( os.path.join( path_objects_build(p), 'objects' ), os.path.join( path_core_build(p), 'objects' ) )
+		delete( path_objects_build(p) )
 	
 def levels_installer( current, test ):
 	
 	verbose( 'LEVELS INSTALLER %s TEST %s' % ( current, test ) )
-	client_installer( 'full_part2of2', levels_installer_path, current, None, test )
+	client_installer( 'full_part3of3', levels_installer_path, current, None, test )
 
 def patch_installer( current, previous, test ):
 	
@@ -833,6 +849,12 @@ def path_levels_build( patch ):
 		return levels_build_patch + '%s' % patch
 	else:
 		return levels_build
+
+def path_objects_build( patch ):
+	if patch:
+		return objects_build_patch + '%s' % patch
+	else:
+		return objects_build
 
 def update_repo( path, revision ):
 	
