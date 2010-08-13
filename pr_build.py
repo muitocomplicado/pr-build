@@ -756,12 +756,13 @@ def full_installer( current, test ):
 	
 	verbose( 'Generating Part 1' )
 	
-	paths = { 
-		core_build: '', 
-		levels_build: 'levels',
-	}
+	paths = (
+		( core_build, '' ), 
+		( levels_build, 'levels' ),
+	)
 	
-	for path,sub in paths.items():
+	for p in paths:
+		path,sub = p
 		
 		for root, dirs, files in os.walk( path, topdown=False ):
 			
