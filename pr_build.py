@@ -766,17 +766,30 @@ def full_installer( current, test ):
 	total = 0
 	count = 0
 	
+	max   = 0
+	max_path = None
+	
 	for p in paths:
 		path,sub = p
 		
 		for root, dirs, files in os.walk( path, topdown=False ):
+			
 			for file in files:
-				total += os.path.getsize(os.path.join(root,file))
+				
+				fs = os.path.getsize(os.path.join(root,file))
+				if fs > max:
+					max = fs
+					max_path = os.path.join(root,file)
+				
+				total += fs
 				count += 1
 	
 	limit = int( total / 3.0 ) + ( 10 ** 8 )
 	if limit > 2 * ( 10 ** 9 ):
 		limit = 2 * ( 10 ** 9 )
+	
+	if max > limit:
+		sys.exit( '%s is larger than installer maximum filesize' % max_path )
 	
 	while len( done ) < count:
 		
