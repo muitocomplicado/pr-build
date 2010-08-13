@@ -512,6 +512,7 @@ def build_client( patch ):
 			clean_archives( cb, core_archives[options['zip']]['client'] )
 			empty_archives( cb, core_revision )
 			clean_atlas( cb )
+			clean_levels( lb )
 	
 	if options['archive']:
 		verbose( 'ARCHIVE %s' % patch )
@@ -944,6 +945,13 @@ def compile_python( path ):
 	
 	verbose( 'Compiling python', False )
 	compileall.compile_dir( path, 1, quiet=options['quiet'] )
+
+def clean_levels( path ):
+
+	verbose( 'Cleaning levels %s' % path, False )
+	
+	if not options['test']:
+		delete( path=path, pattern='test_track', recursive=True, verbose=options['verbose'] )
 
 def clean_python( path ):
 	
