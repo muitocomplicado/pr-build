@@ -755,6 +755,7 @@ def full_installer( current, test ):
 	size = 0
 	
 	verbose( 'Generating Part 1' )
+	delete( path=os.path.join( '%s%s' % ( full_build, part ) ), verbose=options['verbose'] )
 	
 	paths = (
 		( core_build, '' ), 
@@ -773,6 +774,7 @@ def full_installer( current, test ):
 					part += 1
 					size = 0
 					verbose( 'Generating Part %s' % part )
+					delete( path=os.path.join( '%s%s' % ( full_build, part ) ), verbose=options['verbose'] )
 				
 				size += s
 				
@@ -783,6 +785,7 @@ def full_installer( current, test ):
 	
 	for p in range( 1, part+1 ):
 		client_installer( 'full_part%sof%s' % ( p, part ), os.path.join( installer_path, 'pr_full%s_base.iss' % p ), current, None, test )
+		delete( path=os.path.join( '%s%s' % ( full_build, part ) ), verbose=options['verbose'] )
 
 def patch_installer( current, previous, test ):
 	
