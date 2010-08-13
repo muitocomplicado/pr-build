@@ -774,7 +774,7 @@ def full_installer( current, test ):
 				total += os.path.getsize(os.path.join(root,file))
 				count += 1
 	
-	limit = int( total / 3.0 ) + ( 10 ** 6 )
+	limit = int( total / 3.0 ) + ( 10 ** 8 )
 	if limit > 2 * ( 10 ** 9 ):
 		limit = 2 * ( 10 ** 9 )
 	
