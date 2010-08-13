@@ -767,7 +767,7 @@ def full_installer( current, test ):
 			
 			for file in files:
 				
-				s = os.path.size( os.path.join( root, file ) )
+				s = os.path.getsize( os.path.join( root, file ) )
 				if size + s > 2 * ( 10 ** 9 ):
 					part += 1
 					size = 0
