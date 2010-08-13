@@ -788,6 +788,8 @@ def full_installer( current, test ):
 				for file in files:
 					
 					full_path = os.path.join( root, file )
+					if full_path in done:
+						continue
 					
 					s = os.path.getsize( full_path )
 					if size + s > limit:
