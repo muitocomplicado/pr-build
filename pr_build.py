@@ -762,6 +762,15 @@ def full_installer( current, test ):
 		( levels_build, 'levels' ),
 	)
 	
+	total = 0
+	for p in paths:
+		path,sub = p
+		total += os.path.getsize(p)
+	
+	limit = int( total / 3.0 )
+	if limit > 2 * ( 10 ** 9 ):
+		limit = 2 * ( 10 ** 9 )
+	
 	for p in paths:
 		path,sub = p
 		
@@ -770,7 +779,7 @@ def full_installer( current, test ):
 			for file in files:
 				
 				s = os.path.getsize( os.path.join( root, file ) )
-				if size + s > 2 * ( 10 ** 9 ):
+				if size + s > limit:
 					part += 1
 					size = 0
 					verbose( 'Generating Part %s' % part )
