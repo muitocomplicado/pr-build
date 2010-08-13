@@ -765,7 +765,10 @@ def full_installer( current, test ):
 	total = 0
 	for p in paths:
 		path,sub = p
-		total += os.path.getsize(path)
+		
+		for root, dirs, files in os.walk( path, topdown=False ):
+			for file in files:
+				total += os.path.getsize(os.path.join(root,file))
 	
 	limit = int( total / 3.0 )
 	if limit > 2 * ( 10 ** 9 ):
