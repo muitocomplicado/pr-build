@@ -228,6 +228,8 @@ def hide( logs, hide=None ):
 
 def by_none( logs, output='text' ):
 	
+	logs.reverse()
+	
 	entries = ''
 	for entry in logs:
 		entries += message( entry, output )
