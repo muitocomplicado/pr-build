@@ -311,10 +311,10 @@ def message( entry, output='text' ):
 			for path in entry['paths']:
 				a,p = path
 				if output == 'rss':
-					prefix = '&nbsp;&nbsp;&nbsp;&nbsp;'
+					prefix = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'
 				else:
-					prefix = '    '
-				txt += '%s[%s] %s\n' % ( prefix, a, p )
+					prefix = '     '
+				txt += '%s%s %s\n' % ( prefix, a, p )
 			txt += '\n'
 	
 	if output == 'rss':
