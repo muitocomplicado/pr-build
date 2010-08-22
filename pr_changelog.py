@@ -46,6 +46,7 @@ Other options:
 	-m --multi       group multiline entries
 	-x --xxx         hide all comments with xxxx
 	-f --fun         hide all comments except first and last letter of each word
+	-p --paths       show modified paths (includes empty log messages)
 	
 	-v --verbose     run it verbosely
 	-q --quiet       run it quietly
@@ -62,6 +63,7 @@ options = {
 	
 	'multi': None,
 	'hide': None,
+	'paths': None,
 	
 	'verbose': '',
 	'quiet': ''
@@ -84,9 +86,9 @@ def main(argv=None):
 	try:
 		try:
 			opts, args = getopt.getopt(argv[1:], 
-				"hr:tywg:o:n:d:mxfvq", 
+				"hr:tywg:o:n:d:mxfpvq", 
 				[ "help", "revision=", "today", "yesterday", "week", "group=",
-					"output=", "name=", "default=", "multi", "xxx", "fun", "verbose", "quiet" ])
+					"output=", "name=", "default=", "multi", "xxx", "fun", "paths", "verbose", "quiet" ])
 		except getopt.error, msg:
 			raise Usage(msg)
 		
@@ -123,6 +125,8 @@ def main(argv=None):
 				options['hide'] = True
 			if option in ("-f", "--fun"):
 				options['hide'] = False
+			if option in ("-p", "--paths"):
+				options['paths'] = True
 			
 			if option in ("-v", "--verbose"):
 				options['verbose'] = '-v'
@@ -137,7 +141,7 @@ def main(argv=None):
 		if options['output'] not in ['text', 'bbcode', 'rss', 'test']:
 			raise Usage( 'Incorrect output format (text, bbcode, rss, test)' )
 			
-		logs = pr_svn.log( options['path'], options['revision'], False, options['multi'], options['default'] )
+		logs = pr_svn.log( options['path'], options['revision'], options['paths'], options['multi'], options['default'] )
 		
 		if options['hide'] in [ True, False ]:
 			logs = hide( logs, options['hide'] )
@@ -293,11 +297,25 @@ def by_author( logs, output='text' ):
 
 def message( entry, output='text' ):
 	
-	if output == 'test':
+	if output == 'test' and entry['message']:
 		txt = '[QUOTE]Test: %s (%s) %s[/QUOTE]\n\n' % ( entry['message'], entry['author'], entry['revision'] )
 	
 	if output in ['text','bbcode','rss']:
-		txt = '%s: %s (%s) %s\n' % ( entry['category'], entry['message'], entry['author'], entry['revision'] )
+		if entry['message']:
+			txt = '%s: %s (%s) %s\n' % ( entry['category'], entry['message'], entry['author'], entry['revision'] )
+		else:
+			txt = '---- (%s) %s\n' % ( entry['author'], entry['revision'] )
+		
+		if options['paths']:
+			
+			for path in entry['paths']:
+				a,p = path
+				if output == 'rss':
+					prefix = '&nbsp;&nbsp;&nbsp;&nbsp;'
+				else:
+					prefix = '    '
+				txt += '%s[%s] %s\n' % ( prefix, a, p )
+			txt += '\n'
 	
 	if output == 'rss':
 		txt = txt.replace( '\n', '<br />\n' )
