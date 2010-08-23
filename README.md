@@ -62,14 +62,6 @@ Requires Python 2.3+
 	/builds
 	pr_build.py
 
-### Testing
-
-You can run a test with the dummy data in the `test` folder by running `pr_build_test.py` with the following command:
-
-	python pr_build_test.py -c 0,1,2 -l 0,1,2 -n 0123,0124,0125 -b -s -t -v
-
-The results will be in the `test_builds` folder.
-
 
 ## pr_changelog.py
 
@@ -78,7 +70,7 @@ The results will be in the `test_builds` folder.
 	python pr_changelog.py [args] [path|url]
 
 	Main options:
-	
+
 		-r --revision    revision range
 		-t --today       current day of changes
 		-y --yesterday   previous day of changes
@@ -93,20 +85,22 @@ The results will be in the `test_builds` folder.
 		python pr_changelog.py --revision {2008-04-25}:{2008-06-23}
 
 	Other options:
-	
+
 		-g --group       set the entries grouping (default date)
 		                 other: category, author, none
-	
+
 		-o --output      set the output format (default text)
 		                 other: bbcode, rss, test
-	
+
 		-n --name        name of changelog (default empty)
 		-d --default     set the default category (GENERAL)
 		-m --multi       group multiline entries
 		-x --xxx         hide all comments with xxxx
 		-f --fun         hide all comments except first and last letter of each word
-	
+		-p --paths       show modified paths (includes empty log messages)
+
 		-v --verbose     run it verbosely
 		-q --quiet       run it quietly
+	
 
 
