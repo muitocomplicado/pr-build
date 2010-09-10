@@ -232,7 +232,18 @@ def by_none( logs, output='text' ):
 	
 	entries = ''
 	for entry in logs:
-		entries += message( entry, output )
+		
+		if output == 'rss':
+			txt  = '<item>\n'
+			txt += '<title>%s</title>\n' % ( message( entry, output ).replace( '<br />\n', '' ) )
+			txt += '<description></description>\n'
+			txt += '<pubDate>%s</pubDate>\n' % ( datetime.date( int( entry['date'][0:4] ), int( entry['date'][5:7] ), int( entry['date'][8:10] ) ).strftime('%a, %d %b %Y %T') )
+			txt += '<guid isPermalink="false">%s</guid>\n' % ( entry['revision'] )
+			txt += '</item>\n'
+		else:
+			txt = message( entry, output )
+			
+		entries += txt
 	
 	print entries
 
