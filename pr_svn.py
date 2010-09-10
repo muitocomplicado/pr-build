@@ -5,6 +5,7 @@ import sys
 import os
 import os.path
 import tempfile
+import datetime
 
 from xml.dom import minidom
 
@@ -129,6 +130,9 @@ def get_log( file, empty=True, multi=False, default='GENERAL' ):
 		
 		d = log.getElementsByTagName('date')[0].firstChild.nodeValue.encode('utf-8')
 		d = d[0:10]
+		
+		dt = log.getElementsByTagName('date')[0].firstChild.nodeValue.encode('utf-8')
+		dt = datetime.datetime( int(dt[0:4]), int(dt[5:7]), int(dt[8:10]), int(dt[11:13]), int(dt[14:16]), int(dt[17:19]) )
 	
 		a = log.getElementsByTagName('author')[0].firstChild.nodeValue.encode('utf-8')
 		
@@ -152,6 +156,6 @@ def get_log( file, empty=True, multi=False, default='GENERAL' ):
 			ml = ml.replace( c + ':', '' ).strip()
 			c  = c.strip()
 			
-			logs.append( { 'revision': r, 'category': c, 'message': ml, 'date': d, 'author': a, 'paths': p } )
+			logs.append( { 'revision': r, 'category': c, 'message': ml, 'date': d, 'datetime': dt, 'author': a, 'paths': p } )
 	
 	return logs
