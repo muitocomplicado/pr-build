@@ -8,6 +8,7 @@ import time
 import datetime
 import tempfile
 import re
+from xml.sax import saxutils
 
 import pr_svn
 
@@ -171,7 +172,7 @@ def header( path, revision, output='text' ):
 		print '<?xml version="1.0"?>'
 		print '<rss version="2.0">'
 		print '<channel>'
-		print '<title>Project Reality Mod Changelog%s</title>' % options['name']
+		print '<title>Project Reality Mod Changelog%s</title>' % saxutils.escape(options['name'])
 		print '<link>http://realitymod.com</link>'
 		print '<description>Latest changelog information.</description>'
 		print '<language>en-us</language>'
@@ -235,7 +236,7 @@ def by_none( logs, output='text' ):
 		
 		if output == 'rss':
 			txt  = '<item>\n'
-			txt += '<title>%s</title>\n' % ( message( entry, output ).replace( '<br />\n', '' ) )
+			txt += '<title>%s</title>\n' % ( saxutils.escape(message( entry, output ).replace( '<br />\n', '' )) )
 			txt += '<description></description>\n'
 			txt += '<pubDate>%s</pubDate>\n' % ( datetime.date( int( entry['date'][0:4] ), int( entry['date'][5:7] ), int( entry['date'][8:10] ) ).strftime('%a, %d %b %Y %T') )
 			txt += '<guid isPermalink="false">%s</guid>\n' % ( entry['revision'] )
@@ -352,10 +353,10 @@ def category( msg, output='text' ):
 	if output == 'rss':
 		
 		txt  = '<item>\n'
-		txt += '<title>Changelog - %s%s</title>\n' % ( msg, options['name'] )
+		txt += '<title>Changelog - %s%s</title>\n' % ( saxutils.escape(msg), saxutils.escape(options['name']) )
 		txt += '<description><![CDATA[%s]]></description>\n'
-		txt += '<pubDate>%s %s</pubDate>\n' % ( msg, '23:59:59 GMT' )
-		txt += '<guid isPermalink="false">%s - %s</guid>\n' % ( options['path'], msg )
+		txt += '<pubDate>%s %s</pubDate>\n' % ( saxutils.escape(msg), '23:59:59 GMT' )
+		txt += '<guid isPermalink="false">%s - %s</guid>\n' % ( saxutils.escape(options['path']), saxutils.escape(msg) )
 		txt += '</item>\n'
 	
 	return txt
