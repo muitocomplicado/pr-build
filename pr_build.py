@@ -1019,6 +1019,7 @@ def clean_levels( path ):
 	
 	if not options['test']:
 		delete( path=path, pattern='test_track', recursive=True, verbose=options['verbose'] )
+		delete( path=path, pattern='bluescreen', recursive=True, verbose=options['verbose'] )
 
 def clean_python( path ):
 	
