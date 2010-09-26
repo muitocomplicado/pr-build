@@ -718,6 +718,7 @@ def build_server( patch ):
 		delete( path=os.path.join( server_build, 'movies' ), verbose=options['verbose'] )
 		delete( path=os.path.join( server_build, '00000000.256' ), verbose=options['verbose'] )
 		delete( path=os.path.join( server_build, 'pr.exe' ), verbose=options['verbose'] )
+		delete( path=os.path.join( server_build, 'pr_xp.exe' ), verbose=options['verbose'] )
 		delete( path=os.path.join( server_build, 'tr.exe' ), verbose=options['verbose'] )
 		delete( path=os.path.join( server_build, 'patch' ), verbose=options['verbose'] )
 		delete( os.path.join( server_build, 'readme' ), '*.txt', False, ['license.txt'], options['verbose'] )
