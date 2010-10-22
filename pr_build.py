@@ -960,6 +960,7 @@ def clean_archives( path, archives ):
 		delete( path=dir, pattern='*.max',       recursive=True, verbose=options['verbose'] )
 		delete( path=dir, pattern='*.3ds',       recursive=True, verbose=options['verbose'] )
 		delete( path=dir, pattern='*.psd',       recursive=True, verbose=options['verbose'] )
+		delete( path=dir, pattern='*.bak',       recursive=True, verbose=options['verbose'] )
 		delete( path=dir, pattern='samples.tga', recursive=True, verbose=options['verbose'] )
 		delete( path=dir, pattern='uvs.tga',     recursive=True, verbose=options['verbose'] )
 		
