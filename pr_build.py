@@ -268,6 +268,7 @@ options = {
 	'quiet': ''
 }
 
+test_levels = [ 'test_track', 'test_airfield', 'bluescreen' ]
 
 class Usage(Exception):
 	def __init__(self, msg):
@@ -486,6 +487,11 @@ def build_client( patch ):
 				paths.extend(modified)
 				for path in paths:
 					copy( os.path.join( levels_path, path ), os.path.join( lb, path ), options['verbose'] )
+			
+			if options['test']:
+				for level in test_levels:
+					delete( path=lb, pattern=level, recursive=True, verbose=options['verbose'] )
+					export_repo( os.path.join( levels_path, level ), lb )
 			
 			for type in ['server','client']:
 				for p,o in core_archives[options['zip']][type].iteritems():
@@ -1021,9 +1027,8 @@ def clean_levels( path ):
 	verbose( 'Cleaning levels %s' % path, False )
 	
 	if not options['test']:
-		delete( path=path, pattern='test_track', recursive=True, verbose=options['verbose'] )
-		delete( path=path, pattern='test_airfield', recursive=True, verbose=options['verbose'] )
-		delete( path=path, pattern='bluescreen', recursive=True, verbose=options['verbose'] )
+		for level in test_levels:
+			delete( path=path, pattern=level, recursive=True, verbose=options['verbose'] )
 
 def clean_python( path ):
 	
