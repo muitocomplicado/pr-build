@@ -78,9 +78,9 @@ core_build_patch   = os.path.join( builds_path, 'core_patch' )
 levels_build_patch = os.path.join( builds_path, 'levels_patch' )
 
 exec_7zip  = 'C:\\repos\\core\\readme\\assets\\7za.exe'
-exec_inno  = 'C:\\Program Files (x86)\\Inno Setup 5\\Compil32.exe'
+exec_inno  = 'C:\\Program Files (x86)\\Inno Setup 5\\iscc.exe'
 
-installer_path    = os.path.join( core_path, 'readme', 'assets', 'builds', 'installer' )
+installer_path    = os.path.join( core_path, 'readme', 'assets', 'builds', 'installer', 'pr_installer.iss' )
 localization_path = os.path.join( core_path, 'localization' )
 
 filter_archives = {
@@ -832,71 +832,44 @@ def full_installer( current, test ):
 			delete( path=os.path.join( '%s%s' % ( full_build, part ) ), verbose=options['verbose'] )
 	
 	for p in range( 1, part+1 ):
-		client_installer( 'full_part%sof%s' % ( p, part ), os.path.join( installer_path, 'pr_full%s_base.iss' % p ), current, None, test )
+		client_installer( 'full%s' % p, current, None, test )
 		delete( path=os.path.join( '%s%s' % ( full_build, p ) ), verbose=options['verbose'] )
 
 def patch_installer( current, previous, test ):
 	
 	verbose( 'PATCH INSTALLER %s - %s TEST %s' % ( previous, current, test ) )
-	client_installer( 'patch', os.path.join( installer_path, 'pr_patch_base.iss' ), current, previous, test )
+	client_installer( 'patch', current, previous, test )
 
-def client_installer( type, script, current, previous=None, test=False):
+def client_installer( type, current, previous=None, test=False):
 	
-	verbose( 'Running %s installer %s' % ( type, script ), False )
+	verbose( 'Running %s installer' % type, False )
 	
-	final = script.replace( '_base', '' )
+	if not os.path.exists( exec_inno ):
+		return
 	
-	b = open( script, 'r' )
-	f = open( final,  'w' )
+	if test:
+		sufix = '_test'
+	else:
+		sufix = ''
+	
+	args = []
+	args.append( os.path.basename( exec_inno ) )
+	args.append( '"/dVERSION_NUMBER=%s"' % current )
+	args.append( '"/dDOT_VERSION_NUMBER=%s"' % '.'.join(chunked(current,1)) )
+	args.append( '"/dOLD_VERSION_NUMBER=%s"' % previous )
+	args.append( '"/dSETUP_TYPE=%s"' % type )
+	args.append( '"/dFILE_PATH=%s"' % os.path.join( builds_path, type ) )
+	args.append( '"/dMOD_PATH=pr%s"' % sufix )
 	
 	if options['password']:
-		password = options['password']
-		encryption = 'yes'
-	else:
-		password = ''
-		encryption = 'no'
+		args.append( '"/dPASSWORD=%s"' % options['password'] )
 	
-	for line in b:
-		
-		line = line.replace( 'pr_password', password )
-		line = line.replace( 'pr_encryption', encryption )
-		
-		line = line.replace( 'dot_version_number', '.'.join(chunked(current,1)) )
-		
-		if previous:
-			line = line.replace( 'old_version_number', previous )
-		
-		if not test:
-			line = line.replace( '_version_number', '' )
-		else:
-			line = line.replace( '_version_number', '_test' )
-		
-		line = line.replace( 'version_number', current )
-		
-		f.write( line )
+	args.append( '"/o%s"' % builds_path )
+	args.append( '"/q"' )
+	args.append( '"%s"' % installer_path )
 	
-	b.close()
-	f.close()
+	os.spawnv(os.P_WAIT, exec_inno, args)
 	
-	if os.path.exists( exec_inno ):
-		os.spawnl(os.P_WAIT, exec_inno, os.path.basename( exec_inno ), '/cc', final)
-		
-		output   = os.path.join( installer_path, 'Output', 'setup.exe' )
-		
-		if test:
-			sufix = 'test_'
-		else:
-			sufix = ''
-		
-		if previous:
-			filename = os.path.join( builds_path, 'pr_%s_to_%s_%s_%ssetup.exe' % ( previous, current, type, sufix ) )
-		else:
-			filename = os.path.join( builds_path, 'pr_%s_%s_%ssetup.exe' % ( current, type, sufix ) )
-		
-		delete( path=filename, verbose=options['verbose'] )
-		copy( output, filename, options['verbose'] )
-		delete( path=output, verbose=options['verbose'] )
-
 def path_core_build( patch ):
 	if patch:
 		return core_build_patch + '%s' % patch
