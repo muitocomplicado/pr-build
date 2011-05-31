@@ -585,10 +585,12 @@ def build_patch_bat( patch, deleted ):
 	
 	copy( os.path.join( core_path, 'readme', 'assets', '7za.exe' ), os.path.join( pb, '7za.exe' ) )
 	
-	f = open( os.path.join( pb, 'patch.bat' ), 'w' )
-	f.write( 'del /F /Q %s%s' % ( pl, nl ) )
-	f.write( 'del /F /Q %s%s' % ( pe, nl ) )
-	f.write( 'ECHO. > %s%s' % ( pl, nl ) )
+	f = open( os.path.join( pb, 'dummy.bat' ), 'w' )
+	f.write( 'ECHO. >> nul%s' % nl )
+	f.close()
+	
+	c = 0
+	s = ''
 	
 	regex = re.compile('^.*(python|assets)%s.*$' % os.sep, re.I)
 	
@@ -602,12 +604,13 @@ def build_patch_bat( patch, deleted ):
 			
 			w = path.replace('/','\\')
 			
-			f.write( 'ECHO DELETING %s >> %s%s' % ( w, pl, nl ) )
+			c = c + 1
+			s = s + 'ECHO Deleting %s >> %s%s' % ( w, pl, nl )
 			
 			if path.find('.') == -1:
-				f.write( 'rmdir /S /Q "..\\%s"%s' % ( w, nl ) )
+				s = s + 'rmdir /S /Q "..\\%s"%s' % ( w, nl )
 			else:
-				f.write( 'del /F /Q "..\\%s"%s' % ( w, nl ) )
+				s = s + 'del /F /Q "..\\%s"%s' % ( w, nl )
 			
 		else:
 			
@@ -673,10 +676,15 @@ def build_patch_bat( patch, deleted ):
 			
 			zz = zz.replace('/', '\\')
 			
-			f.write( 'ECHO UPDATING %s >> %s%s' % ( zz, pl, nl ) )
-			f.write( '7za.exe d "..\\%s" -y -i@%s%s' % ( zz, l, nl ) )
-			f.write( 'if not %errorlevel% == 0 (goto error)' + nl )
+			c = c + 1
+			s = s + 'ECHO Updating %s >> %s%s' % ( zz, pl, nl )
+			s = s + '7za.exe d "..\\%s" -y -i@%s%s' % ( zz, l, nl )
+			s = s + 'if not %errorlevel% == 0 (goto error)' + nl
 	
+	f = open( os.path.join( pb, 'patch.bat' ), 'w' )
+	f.write( 'ECHO PATCHING %s FILES > %s%s' % ( c, pl, nl ) )
+	f.write( 'del /F /Q %s%s' % ( pe, nl ) )
+	f.write( s )
 	f.write( '%sECHO PATCH COMPLETED >> %s%s' % ( nl, pl, nl ) )
 	f.write( 'goto quit%s' % ( nl ) )
 	f.write( '%s:error%s%s' % ( nl, nl, nl ) )
