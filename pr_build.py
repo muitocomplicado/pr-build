@@ -863,8 +863,10 @@ def client_installer( type, current, previous=None, test=False):
 	args = []
 	args.append( os.path.basename( exec_inno ) )
 	args.append( '"/dVERSION_NUMBER=%s"' % current )
+	args.append( '"/dVERSION_NUMBER_READABLE=v%s.%s"' % ( current[0], current[-3:] ) )
 	args.append( '"/dDOT_VERSION_NUMBER=%s"' % '.'.join(chunked(current,1)) )
 	args.append( '"/dOLD_VERSION_NUMBER=%s"' % previous )
+	args.append( '"/dOLD_VERSION_NUMBER_READABLE=v%s.%s"' % ( previous[0], previous[-3:] ) )
 	args.append( '"/dSETUP_TYPE=%s"' % type )
 	args.append( '"/dFILE_PATH=%s"' % os.path.abspath( os.path.join( builds_path, type ) ) )
 	args.append( '"/dMOD_PATH=pr%s"' % sufix )
