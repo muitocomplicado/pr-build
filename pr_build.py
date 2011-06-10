@@ -866,15 +866,15 @@ def client_installer( type, current, previous=None, test=False):
 	args.append( '"/dDOT_VERSION_NUMBER=%s"' % '.'.join(chunked(current,1)) )
 	args.append( '"/dOLD_VERSION_NUMBER=%s"' % previous )
 	args.append( '"/dSETUP_TYPE=%s"' % type )
-	args.append( '"/dFILE_PATH=%s"' % os.path.join( builds_path, type ) )
+	args.append( '"/dFILE_PATH=%s"' % os.path.abspath( os.path.join( builds_path, type ) ) )
 	args.append( '"/dMOD_PATH=pr%s"' % sufix )
 	
 	if options['password']:
 		args.append( '"/dPASSWORD=%s"' % options['password'] )
 	
-	args.append( '"/o%s"' % builds_path )
+	args.append( '"/o%s"' % os.path.abspath( builds_path ) )
 	args.append( '"/q"' )
-	args.append( '"%s"' % installer_path )
+	args.append( '"%s"' % os.path.abspath( installer_path ) )
 	
 	os.spawnv(os.P_WAIT, exec_inno, args)
 	
